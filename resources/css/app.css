@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Initially hide the action buttons */
+.actions {
+    display: none;
+}
+
+/* Show action buttons when hovering over the row */
+tr:hover .actions {
+    display: block;
+}
+
+/* Optional: Make the rows draggable */
+.draggable {
+    cursor: move;
+}
+
+
+
+
+
+
+
+
+
