@@ -89,29 +89,29 @@
                             <thead class="bg-gray-800 text-white">
                                 <tr>
                                     {{-- <th class="px-6 py-3 text-left border-b">ID</th> --}}
-                                    <th class="px-6 py-3 text-left border-b">Name</th>
-                                    <th class="px-6 py-3 text-left border-b">English Name</th>
-                                    <th class="px-6 py-3 text-left border-b">Course</th>
-                                    <th class="px-6 py-3 text-left border-b">Level</th>
-                                    <th class="px-6 py-3 text-left border-b">Actions</th>
+                                    <th class="px-6 py-3 text-left border-b text-sm">Name</th>
+                                    <th class="px-6 py-3 text-left border-b text-sm">English Name</th>
+                                    <th class="px-6 py-3 text-left border-b text-sm">Course</th>
+                                    <th class="px-6 py-3 text-left border-b text-sm">Level</th>
+                                    <th class="px-6 py-3 text-left border-b text-sm">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($students as $student)
                                     <tr class="hover:bg-gray-100">
                                         {{-- <td class="px-6 py-4 border-b text-gray-800">{{ $student->id }}</td> --}}
-                                        <td class="px-6 py-4 border-b text-gray-800">{{ $student->name }}</td>
-                                        <td class="px-6 py-4 border-b text-gray-800">{{ $student->english_name }}</td>
-                                        <td class="px-6 py-4 border-b text-gray-800">{{ $student->course }}</td>
-                                        <td class="px-6 py-4 border-b text-gray-800">{{ $student->level }}</td>
-                                        <td class="px-6 py-4 border-b text-gray-800">
+                                        <td class="px-6 py-4 border-b text-gray-800 text-sm">{{ $student->name }}</td>
+                                        <td class="px-6 py-4 border-b text-gray-800 text-sm">{{ $student->english_name }}</td>
+                                        <td class="px-6 py-4 border-b text-gray-800 text-sm">{{ $student->course }}</td>
+                                        <td class="px-6 py-4 border-b text-gray-800 text-sm">{{ $student->level }}</td>
+                                        <td class="px-6 py-4 border-b text-gray-800 text-sm">
                                                     <div class="flex justify-start gap-2">
                                                         <!-- Edit Button -->
-                                                        <a href="{{ route('students.edit', $student->id) }}" class="bg-gray-800 hover:bg-transparent px-5 py-2 text-sm shadow-sm hover:shadow-lg font-medium tracking-wider 
+                                                        <a href="{{ route('students.edit', $student->id) }}" class="bg-gray-800 hover:bg-transparent px-5 py-2 text-xs shadow-sm hover:shadow-lg font-medium tracking-wider 
                                     border-2 border-gray-500 hover:border-gray-500 text-white hover:text-gray-900 rounded-xl transition ease-in duration-300">Edit</a>
                                                 
                                                         <!-- Delete Button to Trigger Modal -->
-                                                        <button onclick="openModal()" class="bg-red-500 hover:bg-transparent px-5 py-2 text-sm shadow-sm hover:shadow-lg font-medium tracking-wider 
+                                                        <button onclick="openModal()" class="bg-red-500 hover:bg-transparent px-5 py-2 text-xs shadow-sm hover:shadow-lg font-medium tracking-wider 
                                         border-2 border-red-500 hover:border-red-500 text-white hover:text-red-500 rounded-xl transition ease-in duration-300">
                                                             Delete
                                                         </button>                                                        

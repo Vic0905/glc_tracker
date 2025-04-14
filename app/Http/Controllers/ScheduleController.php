@@ -32,7 +32,7 @@ class ScheduleController extends Controller
                           ->orderBy('schedule_date', 'desc') // newest schedules first
                           ->orderBy('created_at', 'desc'); // newest schedules first
      
-         // Apply date filter only if a date is selected
+         // Apply date filter only if a date is selected 
          if (!empty($date)) {
              $query->whereDate('schedule_date', $date);
          }
@@ -56,7 +56,7 @@ class ScheduleController extends Controller
              });
          }
      
-         // Apply pagination before fetching results
+         // Apply pagination before fetching results 
          $schedules = $query->paginate(10); // Adjust the number as needed
      
          // Group schedules by teacher, room, and schedule date
@@ -286,7 +286,7 @@ class ScheduleController extends Controller
 //         $schedule->schedule_date = $request->schedule_date;
 //         $schedule->subject_id = $request->subject_id;
 //         $schedule->status = $request->status;
-//         $schedule->{$request->time_slot} = 1; // Mark time slot as occupied
+//         $schedule->{$request->time_slot} = 1; // Mark time slot as occupied 
 //         $schedule->save();
 
 //         return response()->json(['message' => 'New schedule added successfully!'], 201);
@@ -303,7 +303,7 @@ class ScheduleController extends Controller
     {
         $students = Schedule::where('teacher_id', $teacherId)
             ->where('schedule_date', $scheduleDate)
-            ->with(['student', 'subject']) // Ensure relationships are loaded
+            ->with(['student', 'subject']) // Ensure relationships are loaded 
             ->get();
     
         if ($students->isEmpty()) {
@@ -346,9 +346,7 @@ class ScheduleController extends Controller
     }
     
     
-    
-
-    
+    // this method will enable the function to show the report of the schedule
     public function generateReport(Request $request)
     {
         // Get the date and student name from the request
@@ -361,7 +359,7 @@ class ScheduleController extends Controller
         // Include soft-deleted records in the query
         $schedulesQuery = Schedule::withTrashed()->with(['subject', 'student', 'room']);
     
-        // Filter by date if provided
+        // Filter by date if provided 
         if ($date) {
             $schedulesQuery->whereDate('schedule_date', $date);
         }
@@ -373,12 +371,18 @@ class ScheduleController extends Controller
             });
         }
     
+        $schedulesQuery->orderBy('schedule_date', 'desc')
+               ->orderBy('created_at', 'desc'); // Ensure the latest created records come first
+
+
+    
         // Apply pagination
-        $schedules = $schedulesQuery->paginate(10); // Adjust per-page limit as needed
+        $schedules = $schedulesQuery->paginate(10);
     
         // Return the view with schedules and filters
         return view('schedules.report', compact('schedules', 'date', 'studentName'));
     }
+    
     
     
     
@@ -441,7 +445,7 @@ class ScheduleController extends Controller
             ]);
         }
     
-        // Delete all matching schedules
+        // Delete all matching schedules with the same room and date so that the admin can know what was deleted
         Schedule::where('room_id', $roomId)
                 ->where('schedule_date', $scheduleDate)
                 ->delete();
