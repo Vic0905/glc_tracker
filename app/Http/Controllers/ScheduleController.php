@@ -20,7 +20,7 @@ class ScheduleController extends Controller
 
      public function index(Request $request)
      {
-         $user = Auth::user(); // Get the authenticated user
+         $user = Auth::user(); // Get the authenticated user 
      
          // Retrieve filter parameters
          $teacherName = $request->query('teacher_name', '');
@@ -385,6 +385,54 @@ class ScheduleController extends Controller
     
     
     
+    public function show(Request $request)
+    {
+        $user = Auth::user(); // Get the authenticated user 
+    
+        // Retrieve filter parameters
+        $teacherName = $request->query('teacher_name', '');
+        $studentName = $request->query('student_name', '');
+        $date = $request->input('date', '');
+    
+        // Base query with relationships
+        $query = Schedule::with(['student', 'teacher', 'subject', 'room'])
+                         ->orderBy('schedule_date', 'desc') // newest schedules first
+                         ->orderBy('created_at', 'desc'); // newest schedules first
+    
+        // Apply date filter only if a date is selected 
+        if (!empty($date)) {
+            $query->whereDate('schedule_date', $date);
+        }
+    
+        // If the user is a teacher, filter schedules by their teacher_id
+        if ($user && $user->hasRole('teacher')) {
+            $query->where('teacher_id', $user->id);
+        }
+    
+        // Filter by teacher name (if provided)
+        if ($teacherName) {
+            $query->whereHas('teacher', function ($q) use ($teacherName) {
+                $q->where('name', 'like', '%' . $teacherName . '%');
+            });
+        }
+    
+        // Filter by student name (if provided) at the database level
+        if ($studentName) {
+            $query->whereHas('student', function ($q) use ($studentName) {
+                $q->where('name', 'like', '%' . $studentName . '%');
+            });
+        }
+    
+        // Apply pagination before fetching results 
+        $schedules = $query->paginate(1000); // Adjust the number as needed
+    
+        // Group schedules by teacher, room, and schedule date
+        $groupedSchedules = $schedules->groupBy(function ($schedule) {
+            return $schedule->teacher_id . '_' . $schedule->room_id . '_' . $schedule->schedule_date;
+        });
+    
+        return view('schedules.show', compact('groupedSchedules', 'studentName', 'teacherName', 'schedules', 'date'));
+    }
     
 
 
@@ -412,7 +460,7 @@ class ScheduleController extends Controller
             'model_id' => $schedule->id,
         ]);
     
-        // Delete the schedule from the database        
+        // Delete the schedule from the database 
         $schedule->delete();
     
         // Redirect to the schedules index page with a success message 

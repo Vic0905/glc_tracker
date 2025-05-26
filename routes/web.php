@@ -36,7 +36,7 @@ Route::resource('subjects', SubjectController::class);
 Route::resource('users', UserController::class);
 
 Route::resource('schedules', ScheduleController::class);
-Route::get('/schedules/{id}', [ScheduleController::class, 'show'])->name('schedules.show');
+// Route::get('/schedules/{id}', [ScheduleController::class, 'show'])->name('schedules.show');
 Route::put('schedules/{id}', [ScheduleController::class, 'update'])->name('schedules.update');
 // Route::delete('schedules/{id}', [ScheduleController::class, 'destroy'])->name('schedules.destroy');
 Route::delete('/schedules/{id}', [ScheduleController::class, 'destroy'])->name('schedules.destroy');
@@ -61,7 +61,7 @@ Route::post('/schedules/add', [ScheduleController::class, 'addStudentToSchedule'
 Route::get('/users', [UserController::class, 'index'])->name('users.index');
 Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
 Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
-
+Route::get('/schedules/available', [ScheduleController::class, 'available'])->name('schedules.available');
 
 
 

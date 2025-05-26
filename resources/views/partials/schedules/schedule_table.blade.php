@@ -40,7 +40,7 @@
 
             @foreach($groupedSchedules as $group)
                 <tr class="hover:bg-slate-50 align-top transition text-xs">
-                    <td class="px-4 py-3 border border-gray-200 font-medium">
+                    <td class="px-4 py-3 border border-gray-200 font-medium text-sm">
                         <a href="#" onclick="event.preventDefault(); showTeacherStudents({{ $group->first()->teacher->user->id }}, '{{ $group->first()->schedule_date }}')" 
                            class="text-blue-600 hover:underline">
                             {{ $group->first()->teacher->name ?? 'N/A' }}
@@ -54,7 +54,7 @@
                             $slotKey = $timeSlots[$time] ?? null;
                             $scheduledStudents = $group->filter(fn($schedule) => $slotKey && $schedule->{$slotKey});
                         @endphp
-                        <td class="px-1 py-1 border border-gray-200 align-top">
+                        <td class="px-1 py-2 border border-gray-200 align-top">
                             @if($scheduledStudents->isNotEmpty())
                                 @foreach($scheduledStudents as $schedule)
                                     @php
@@ -70,7 +70,7 @@
                                     </div>
                                 @endforeach
                             @else
-                                <span class="text-gray-400 text-xs italic">N/A</span>
+                                <span class="text-gray-900 text-xs bold">---</span>
                             @endif
                         </td>
                     @endforeach
@@ -90,6 +90,20 @@
     </table>
 </div>
 
-<div class="mt-4 flex justify-end">
-    {{ $schedules->links('vendor.pagination.tailwind') }}
+<div class="flex justify-between items-center mt-4 mb-2 gap-4 flex-wrap">
+
+      <!-- Button -->
+      <div class="flex justify-start">
+        <a href=" {{route('schedules.available')}} " class="w-full md:w-auto bg-gray-900 hover:bg-transparent px-6 py-2 text-xs font-medium tracking-wider border-2 border-gray-500
+        hover:border-gray-500 text-white hover:text-gray-900 rounded-xl transition duration-150 ease-in">
+            View Available Schedules
+        </a>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex justify-end">
+        {{ $schedules->links('vendor.pagination.tailwind') }}
+    </div>
 </div>
+
+

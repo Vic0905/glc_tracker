@@ -1,106 +1,155 @@
-{{-- @extends('layouts.app')
-
-@section('content')
-<div class="container mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="py-4">
-        <h2 class="text-2xl font-semibold text-gray-900">
-            Teacher: {{ $teacher->name }}
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Available Schedules') }}
+            <span class="text-gray-500 text-sm mr-8">({{ $schedules->total() }} schedules)</span>
         </h2>
-    </div>
+    </x-slot>
 
-    <div class="bg-white shadow-sm rounded-lg">
-        <div class="px-4 py-5 sm:p-6">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Assigned Students</h3>
-            
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Student Name
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Latest Subject
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Total Sessions
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach($schedules as $schedule)
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900">
-                                    {{ $schedule->student->name }}
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">
-                                    {{ $schedule->subject->name }}
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">
-                                    {{ $allSchedules->where('student_id', $schedule->student_id)->count() }}
-                                </div>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="mt-8">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">All Sessions</h3>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Student
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Subject
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Date
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Status
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @foreach($allSchedules as $schedule)
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900">
-                                        {{ $schedule->student->name }}
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">
-                                        {{ $schedule->subject->name }}
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">
-                                        {{ \Carbon\Carbon::parse($schedule->schedule_date)->format('Y-m-d') }}
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">
-                                        {{ $schedule->status }}
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+    <div class="flex flex-wrap md:flex-nowrap justify-center items-center p-5 space-x-4 w-full">
+                <!-- Search Input (Centered on Mobile) -->
+                <div class="flex flex-col items-center w-full">
+                    <form action="{{ route('schedules.available') }}" method="GET" class="flex flex-col md:flex-row items-center gap-2 w-full max-w-md">
+                        <div class="relative w-full text-gray-800 uppercase font-bold">
+                            <input type="text" name="teacher_name" value="{{ request('teacher_name') }}" placeholder="Search by teacher name"
+                                class="block w-full px-4 py-3 pl-10 text-gray-800 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300 ease-in-out"/>
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 18a7 7 0 100-14 7 7 0 000 14zM21 21l-4.35-4.35" />
+                                </svg>
+                            </div>
+                        </div>
+                        <button class="bg-gray-900 hover:bg-transparent px-6 py-2 text-xs shadow-sm hover:shadow-lg font-medium tracking-wider border-2 border-gray-500 hover:border-gray-500 text-gray-100 hover:text-gray-900 rounded-xl transition ease-in duration-150"
+                            type="submit">
+                            Generate
+                        </button>
+                    </form>
                 </div>
+        
+                <!-- Date Selection Form (Centered on Mobile) this function will enable the-->
+                <div class="flex flex-col items-center w-full mt-3">
+                    <form method="GET" action="{{ route('schedules.available') }}" class="flex flex-col md:flex-row items-center gap-2 w-full max-w-md text-gray-800">
+                        <input type="date" id="date" name="date" value="{{ $date }}" class="block w-full px-4 py-3 pl-10 text-gray-800 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300 ease-in-out"/>
+                        <button class="w-full md:w-auto bg-gray-900 hover:bg-transparent px-6 py-2 text-xs font-medium tracking-wider border-2 border-gray-500 hover:border-gray-500 text-white hover:text-gray-900 rounded-xl transition duration-150 ease-in"
+                            type="submit">
+                            Generate
+                        </button>
+                    </form>
+                </div>
+        
+                <!-- Add Schedule Button (Centered on Mobile) -->
+                <div class="flex justify-center w-full mt-3">
+                    <a href="{{ route('schedules.index') }}" 
+                    class="flex justify-center gap-2 items-center mx-auto shadow-xl text-md bg-gray-50 backdrop-blur-md lg:font-semibold isolation-auto border-gray-50 before:absolute before:w-full before:transition-all before:duration-500 before:hover:w-full before:-left-full before:hover:left-0 before:rounded-full before:bg-gray-900 hover:text-gray-50 before:-z-10 before:aspect-square before:hover:scale-150 before:hover:duration-500 relative z-10 px-4 py-2 overflow-hidden border-2 rounded-full group">
+                        Back to Schedules
+                        <svg class="w-8 h-8 justify-end group-hover:rotate-90 group-hover:bg-gray-50 text-gray-50 ease-linear duration-300 rounded-full border border-gray-700 group-hover:border-none p-2 rotate-45"
+                            viewBox="0 0 16 19" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M7 18C7 18.5523 7.44772 19 8 19C8.55228 19 9 18.5523 9 18H7ZM8.70711 0.292893C8.31658 -0.0976311 7.68342 -0.0976311 7.29289 0.292893L0.928932 6.65685C0.538408 7.04738 0.538408 7.68054 0.928932 8.07107C1.31946 8.46159 1.95262 8.46159 2.34315 8.07107L8 2.41421L13.6569 8.07107C14.0474 8.46159 14.6805 8.46159 15.0711 8.07107C15.4616 7.68054 15.4616 7.04738 15.0711 6.65685L8.70711 0.292893ZM9 18L9 1H7L7 18H9Z"
+                                class="fill-gray-800 group-hover:fill-gray-800"></path>
+                        </svg>
+                    </a>
+                </div>  
             </div>
-        </div>
+
+<!--  Schedules Table -->
+<div class="bg-white shadow-xl rounded-2xl overflow-hidden max-w-full max-h-[600px] overflow-y-auto text-sm font-sans">
+    <table class="min-w-full border-separate border-spacing-0 text-sm">
+        <!-- Header -->
+        <thead class="bg-slate-800 text-gray-100 sticky top-0 z-10 shadow">
+            <tr>
+                <th class="px-4 py-3 border border-gray-700 text-left text-sm">Teacher</th>
+                <th class="px-4 py-3 border border-gray-700 text-left text-sm">Room</th>
+                <th class="px-4 py-3 border border-gray-700 text-left text-sm">Date</th>
+                @foreach(['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'] as $time)
+                    @php
+                        $startTime = \Carbon\Carbon::createFromFormat('H:i', $time);
+                        $endTime = $startTime->copy()->addMinutes(50);
+                    @endphp
+                    <th class="px-4 py-3 border border-gray-700 text-center whitespace-nowrap text-xs ">
+                        {{ $startTime->format('H:i') }}<br>to<br>{{ $endTime->format('H:i') }}
+                    </th>
+                @endforeach
+                {{-- @role('admin')
+                    <th class="px-4 py-3 border border-gray-700 text-center text-sm">Actions</th>
+                @endrole --}}
+            </tr>
+        </thead>
+
+        <tbody>
+            @php
+                $timeSlots = [
+                    '08:00' => 'time_8_00_8_50',
+                    '09:00' => 'time_9_00_9_50',
+                    '10:00' => 'time_10_00_10_50',
+                    '11:00' => 'time_11_00_11_50',
+                    '12:00' => 'time_12_00_12_50',
+                    '13:00' => 'time_13_00_13_50',
+                    '14:00' => 'time_14_00_14_50',
+                    '15:00' => 'time_15_00_15_50',
+                    '16:00' => 'time_16_00_16_50',
+                    '17:00' => 'time_17_00_17_50',
+                ];
+            @endphp
+
+            @foreach($groupedSchedules as $group)
+                <tr class="hover:bg-slate-50 align-top transition text-xs">
+                    <td class="px-4 py-3 border border-gray-200 font-medium">
+                        <a href="#" onclick="event.preventDefault(); showTeacherStudents({{ $group->first()->teacher->user->id }}, '{{ $group->first()->schedule_date }}')" 
+                           class="text-blue-600 hover:underline">
+                            {{ $group->first()->teacher->name ?? 'N/A' }}
+                        </a>
+                    </td>
+                    <td class="px-4 py-3 border border-gray-200 font-bold">{{ $group->first()->room->roomname ?? 'N/A' }}</td>
+                    <td class="px-4 py-3 border border-gray-200 font-bold">{{ $group->first()->schedule_date ?? 'N/A' }}</td>
+
+                    @foreach(['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'] as $time)
+                        @php
+                            $slotKey = $timeSlots[$time] ?? null;
+                            $scheduledStudents = $group->filter(fn($schedule) => $slotKey && $schedule->{$slotKey});
+                        @endphp
+                        <td class="px-1 py-1 border border-gray-200 align-top">
+                            @if($scheduledStudents->isNotEmpty())
+                                @foreach($scheduledStudents as $schedule)
+                                    @php
+                                        $status = $schedule->status ?? 'N/A';
+                                        $isAbsent = in_array($status, ['N/A', 'absent GRP', 'absent MTM']);
+                                        $bgColor = $isAbsent ? 'bg-red-100' : 'bg-green-100';
+                                        $textColor = $isAbsent ? 'text-red-700' : 'text-green-700';
+                                    @endphp
+                                    <div class="{{ $bgColor }} rounded-lg mb-1 p-2 shadow-sm">
+                                        <strong>{{ $schedule->student->name ?? 'N/A' }}</strong><br>
+                                        <span class="text-xs text-gray-600">{{ optional($schedule->studentRoom)->roomname ?? 'N/A' }}</span><br>
+                                        <span class="text-xs {{ $textColor }}">({{ $status }})</span>
+                                    </div>
+                                @endforeach
+                            @else
+                                <span class="text-gray-400 text-xs italic">---</span>
+                            @endif
+                        </td>
+                    @endforeach
+
+                    {{-- @role('admin')
+                        <td class="px-4 py-3 border border-gray-100 text-center">
+                            <button onclick="confirmDeleteByRoomAndDate({{ $schedule->room_id }}, '{{ $schedule->schedule_date }}')"
+                                class="bg-red-500 hover:bg-transparent px-5 py-2 text-xs shadow-sm hover:shadow-lg font-medium tracking-wider 
+                                        border-2 border-red-500 hover:border-red-500 text-white hover:text-red-500 rounded-xl transition ease-in duration-100">
+                                 Delete
+                            </button>
+                        </td>
+                    @endrole --}}
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+
+<div class="flex justify-between items-center mt-4 mb-2 gap-4 flex-wrap">
+
+    <!-- Pagination -->
+    <div class="flex justify-end">
+        {{ $schedules->links('vendor.pagination.tailwind') }}
     </div>
 </div>
-@endsection --}}
+
+
+</x-app-layout>
