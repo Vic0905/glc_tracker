@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Available Schedules') }}
+            {{ __('Input Schedule') }}
             <span class="text-gray-500 text-sm mr-8">({{ $schedules->total() }} schedules)</span>
         </h2>
     </x-slot>
@@ -25,6 +25,14 @@
                         </button>
                     </form>
                 </div>
+
+                <!-- Add Schedule Button (Centered on Mobile) -->
+                <div class="flex justify-center w-full mt-3">
+                    <a href="{{ route('schedules.create') }}" 
+                    class="w-full md:w-auto bg-gray-900 hover:bg-transparent px-6 py-2 text-sm font-medium tracking-wider border-2 border-gray-500 hover:border-gray-500 text-white hover:text-gray-900 rounded-xl transition duration-150 ease-in">
+                        Add Schedule
+                    </a>
+                </div>  
              
                 <!-- Add Schedule Button (Centered on Mobile) -->
                 <div class="flex justify-center w-full mt-3">
@@ -44,15 +52,9 @@
 <div class="bg-white shadow-xl rounded-2xl overflow-hidden max-w-full max-h-[600px] overflow-y-auto text-sm font-sans">
     <table class="min-w-full border-separate border-spacing-0 text-sm">
         <thead class="text-gray-900 sticky top-0 z-10 shadow">
-            <!-- New row showing the date above -->
-            <tr>
-                <th colspan="13" class="px-4 py-2 text-center text-xl font-semibold border border-gray-700 bg-orange-600">
-                    Schedules for {{ \Carbon\Carbon::today()->format('F d, Y') }}
-                </th>
-            </tr>
             {{-- Header --}}
             <tr>
-                <th class=" bg-gray-100 px-3 py-1 border border-gray-400 text-left text-sm">Teacher</th>
+                <th class=" bg-gray-100 px-1 py-1 border border-gray-400 text-left text-sm">Teacher's Name</th>
                 <th class=" bg-gray-100 px-3 py-1 border border-gray-400 text-left text-sm">Room</th>
 
                 @foreach(['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'] as $time)
@@ -60,7 +62,7 @@
                         $startTime = \Carbon\Carbon::createFromFormat('H:i', $time);
                         $endTime = $startTime->copy()->addMinutes(50);
                     @endphp
-                    <th class="bg-blue-200 px-3 py-1 border border-gray-400 text-center whitespace-nowrap text-sm ">
+                    <th class="bg-orange-200 px-3 py-1 border border-gray-400 text-center whitespace-nowrap text-sm ">
                         {{ $startTime->format('H:i') }}<br>to<br>{{ $endTime->format('H:i') }}
                     </th>
                 @endforeach

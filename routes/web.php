@@ -35,7 +35,10 @@ Route::resource('rooms', RoomController::class);
 Route::resource('subjects', SubjectController::class);
 Route::resource('users', UserController::class);
 
+// route input put it above the schedule resource because already using get method of schedule
+Route::get('/schedules/input', [ScheduleController::class, 'input'])->name('schedules.input');
 Route::resource('schedules', ScheduleController::class);
+
 // Route::get('/schedules/{id}', [ScheduleController::class, 'show'])->name('schedules.show');
 Route::put('schedules/{id}', [ScheduleController::class, 'update'])->name('schedules.update');
 // Route::delete('schedules/{id}', [ScheduleController::class, 'destroy'])->name('schedules.destroy');
@@ -61,6 +64,8 @@ Route::post('/schedules/add', [ScheduleController::class, 'addStudentToSchedule'
 Route::get('/users', [UserController::class, 'index'])->name('users.index');
 Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
 Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+
+// route for schedule avail button put it below the schedule resource 
 Route::get('/schedules/available', [ScheduleController::class, 'available'])->name('schedules.available');
 
 

@@ -30,7 +30,7 @@ class TeacherController extends Controller
                 $query->where('name', 'like', '%' . $teacherName . '%');
             })
             ->orderBy('name', 'asc') // Sort alphabetically
-            ->paginate(5); // Display 15 teachers per page
+            ->paginate(20); // Display 15 teachers per page
     
     
         return view('teachers.index', compact('teachers', 'teacherName'));

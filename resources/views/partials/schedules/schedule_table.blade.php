@@ -1,7 +1,7 @@
-<!-- Improved Schedules Table -->
-<div class="bg-white shadow-xl rounded-2xl overflow-hidden max-w-full max-h-[500px] overflow-y-auto text-sm font-sans">
+<!-- Schedules Table -->
+<div class="bg-white shadow-xl rounded-2xl overflow-hidden max-w-full max-h-[600px] overflow-y-auto text-sm font-sans">
     <table class="min-w-full border-separate border-spacing-0 text-sm">
-        <!-- Header -->
+        <!-- Table Header -->
         <thead class="bg-slate-800 text-gray-100 sticky top-0 z-10 shadow">
             <tr>
                 <th class="px-4 py-3 border border-gray-700 text-left text-sm">Teacher</th>
@@ -21,7 +21,7 @@
                 @endrole
             </tr>
         </thead>
-
+        {{-- Table body --}}
         <tbody>
             @php
                 $timeSlots = [
@@ -92,13 +92,21 @@
 
 <div class="flex justify-between items-center mt-4 mb-2 gap-4 flex-wrap">
 
+      @role('admin')  
       <!-- Button -->
       <div class="flex justify-start">
         <a href=" {{route('schedules.available')}} " class="w-full md:w-auto bg-gray-900 hover:bg-transparent px-6 py-2 text-xs font-medium tracking-wider border-2 border-gray-500
         hover:border-gray-500 text-white hover:text-gray-900 rounded-xl transition duration-150 ease-in">
-            View Available Schedules
+            Schedules for {{ \Carbon\Carbon::today()->format('F d, Y') }}
         </a>
     </div>
+ <div class="flex justify-between">
+        <a href=" {{route('schedules.input')}} " class="w-full md:w-auto bg-gray-900 hover:bg-transparent px-6 py-2 text-xs font-medium tracking-wider border-2 border-gray-500
+        hover:border-gray-500 text-white hover:text-gray-900 rounded-xl transition duration-150 ease-in">
+           Input Schedules
+        </a>
+    </div>
+    @endrole
 
     <!-- Pagination -->
     <div class="flex justify-end">

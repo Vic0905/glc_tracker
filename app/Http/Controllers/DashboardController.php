@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\Subject;
-use App\Models\ActivityLog; // Import the ActivityLog model
+use App\Models\ActivityLog; 
+use App\Models\Schedule;
 
 class DashboardController extends Controller
 {
@@ -15,12 +16,13 @@ class DashboardController extends Controller
         $studentsCount = Student::count();
         $teachersCount = Teacher::count();
         $subjectsCount = Subject::count();
+        $schedulesCount = Schedule::count();
 
         // Get the latest 5 activities from the activity logs table
         $activities = ActivityLog::latest()->take(15)->get();
 
         // Pass data to the view to display the dashboard
-        return view('dashboard', compact('studentsCount', 'teachersCount', 'subjectsCount', 'activities'));
+        return view('dashboard', compact('studentsCount', 'teachersCount', 'subjectsCount', 'schedulesCount', 'activities'));
     }
     public function deleteLogs()
 {
