@@ -4,7 +4,7 @@ ADMIN SCHEDULE TABLE
 ![2](https://github.com/user-attachments/assets/95642db2-0fe7-47ce-9dab-3b3c2f16e822)
 TEACHER'S TABLE
 ![T1](https://github.com/user-attachments/assets/ff9be35a-7b68-4091-b968-40d2c7ccfe96)
-TEACHER CAN CHANGE THE STATUSES OF THE STUDENTS
+TEACHER CAN CHANGE THE STATUS OF THE STUDENTS
 ![T2](https://github.com/user-attachments/assets/734133d6-6589-4340-9b01-321cc0b9ea1f)
 
 
