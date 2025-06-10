@@ -10,19 +10,21 @@ class StudentController extends Controller
 {
     public function index(Request $request)
     {
-        // get all students from the database
-        $students = Student::all();
+        
 
         $studentName = $request->query('student_name');
 
          // If a student name is provided, filter students by that name
-    $students = Student::query()
-    ->when($studentName, function ($query) use ($studentName) {
-        $query->where('name', 'like', '%' . $studentName . '%');
-    })
-    ->get();
+        $students = Student::query()
+        ->when($studentName, function ($query) use ($studentName) {
+            $query->where('name', 'like', '%' . $studentName . '%');
+        })
+        ->orderBy('name', 'asc')
+        ->get();
 
-        return view('students.index', compact('students', 'studentName'));
+        $studentCount = $students->count();
+
+        return view('students.index', compact('students', 'studentName', 'studentCount'));
     }
 
     public function create()
@@ -43,7 +45,7 @@ class StudentController extends Controller
         ]);
 
         // Redirect to the students list with success message
-        return redirect()->route('students.index')->with('success', 'Student added successfully.');
+        return redirect()->route('students.create')->with('success', 'Student added successfully.');
     }
 
     public function edit($id)

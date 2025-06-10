@@ -9,8 +9,27 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-gray-100">
+                    <!-- Success Message -->
+                    @if(session('success'))
+                        <div id="successMessage" class="bg-green-600 text-white p-4 mb-6 rounded-lg shadow-md">
+                            {{ session('success') }}
+                        </div>
+                    @endif
 
-
+                    <script>
+                        document.addEventListener('DOMContentLoaded', () => {
+                            const successMessage = document.getElementById('successMessage');
+                            if (successMessage) {
+                                setTimeout(() => {
+                                    successMessage.style.transition = 'opacity 1.0s ease';
+                                    successMessage.style.opacity = '0';
+                                    setTimeout(() => successMessage.remove(), 500);
+                                }, 3000);
+                            }
+                        });
+                    </script>
+                    
+                    <!-- Form to Add Student -->
                     <div class="max-w-2xl mx-auto bg-gray-100 p-10 rounded-lg shadow-lg">
                         <form action="{{ route('students.store') }}" method="POST" class="space-y-6 ">
                             @csrf

@@ -2,6 +2,7 @@
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Rooms') }}
+            <span class="text-sm text-gray-900">: {{$roomCount}} </span>
         </h2>
     </x-slot>
 
@@ -9,7 +10,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm sm:rounded-lg p-6">
              
-                    <!-- Success Message -->
+                   <!-- Success Message -->
                     @if(session('success'))
                         <div id="successMessage" class="bg-green-600 text-white p-4 mb-6 rounded-lg shadow-md">
                             {{ session('success') }}
@@ -23,11 +24,12 @@
                                 setTimeout(() => {
                                     successMessage.style.transition = 'opacity 1.0s ease';
                                     successMessage.style.opacity = '0';
-                                    setTimeout(() => successMessage.remove(), 500); // Fully removes the element after fading out
-                                }, 3000); // 3-second delay before fading out
+                                    setTimeout(() => successMessage.remove(), 500);
+                                }, 3000);
                             }
                         });
                     </script>
+
 
                     <div class="flex flex-wrap md:flex-nowrap justify-center items-center p-5 space-x-4 w-full">
 
@@ -47,8 +49,7 @@
                                         fill="none"
                                         viewBox="0 0 24 24"
                                         stroke="currentColor"
-                                        stroke-width="2"
-                                    >
+                                        stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M11 18a7 7 0 100-14 7 7 0 000 14zM21 21l-4.35-4.35" />
                                     </svg>
                                 </div>

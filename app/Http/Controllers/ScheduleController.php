@@ -6,6 +6,7 @@ use App\Models\ActivityLog;
 use App\Models\Schedule;
 use App\Models\Student;
 use App\Models\Subject;
+use App\Models\User;
 use App\Models\Room;
 use App\Models\Teacher;
 use Carbon\Carbon;
@@ -18,56 +19,73 @@ class ScheduleController extends Controller
      * Display a listing of the resource. | the method below will enable the function to display the data
      */
 
-     public function index(Request $request)
-     {
-         $user = Auth::user(); // Get the authenticated user 
-     
-         // Retrieve filter parameters
-         $teacherName = $request->query('teacher_name', '');
-         $studentName = $request->query('student_name', '');
-         $date = $request->input('date', '');
-     
-         // Base query with relationships
-         $query = Schedule::with(['student', 'teacher', 'subject', 'room'])
-                          ->orderBy('schedule_date', 'desc') // newest schedules first
-                          ->orderBy('created_at', 'desc'); // newest schedules first
-     
-         // Apply date filter only if a date is selected 
-         if (!empty($date)) {
-             $query->whereDate('schedule_date', $date);
-         }
-     
-         // If the user is a teacher, filter schedules by their teacher_id
-         if ($user && $user->hasRole('teacher')) {
-             $query->where('teacher_id', $user->id);
-         }
-     
-         // Filter by teacher name (if provided)
-         if ($teacherName) {
-             $query->whereHas('teacher', function ($q) use ($teacherName) {
-                 $q->where('name', 'like', '%' . $teacherName . '%');
-             });
-         }
-     
-         // Filter by student name (if provided) at the database level
-         if ($studentName) {
-             $query->whereHas('student', function ($q) use ($studentName) {
-                 $q->where('name', 'like', '%' . $studentName . '%');
-             });
-         }
-     
-         // Apply pagination before fetching results 
-         $schedules = $query->paginate(10); // Adjust the number as needed
-     
-         // Group schedules by teacher, room, and schedule date
-         $groupedSchedules = $schedules->groupBy(function ($schedule) {
-             return $schedule->teacher_id . '_' . $schedule->room_id . '_' . $schedule->schedule_date;
-         });
-     
-         return view('schedules.index', compact('groupedSchedules', 'studentName', 'teacherName', 'schedules', 'date'));
-     }
-     
-     
+        public function index(Request $request)
+    {
+        $user = Auth::user(); // Get the authenticated user 
+        
+        // Retrieve filter parameters
+        $teacherName = $request->query('teacher_name', '');
+        $studentName = $request->query('student_name', '');
+        $date = $request->input('date', '');
+        
+        // Base query with eager loaded relationships
+        $query = Schedule::with(['student', 'teacher', 'subject', 'room'])
+                         ->orderBy('schedule_date', 'desc') // newest schedules first
+                         ->orderBy('created_at', 'desc'); // newest schedules first
+        
+        // Apply date filter only if a date is selected 
+        if (!empty($date)) {
+            $query->whereDate('schedule_date', $date);
+        }
+        
+        // If the user is a teacher, filter schedules by their teacher_id (user_id)
+        if ($user && $user->hasRole('teacher')) {
+            $query->where('teacher_id', $user->id);
+        }
+        
+        // Filter by teacher name (if provided)
+        if ($teacherName) {
+            $query->whereHas('teacher', function ($q) use ($teacherName) {
+                // Assuming 'name' column exists directly on the users table for teachers
+                $q->where('name', 'like', '%' . $teacherName . '%');
+            });
+        }
+        
+        // Filter by student name (if provided) at the database level
+        if ($studentName) {
+            $query->whereHas('student', function ($q) use ($studentName) {
+                $q->where('name', 'like', '%' . $studentName . '%');
+            });
+        }
+        
+        // Fetch all schedules for grouping
+        $allSchedules = $query->get(); 
+        
+        // Group schedules by roomname first, then by teacher_id and schedule_date
+        // This structure matches what my Blade template expects ($schedulesByRoom[$room->roomname])
+        $schedulesByRoom = $allSchedules->groupBy('room.roomname')->map(function ($roomSchedules) {
+            return $roomSchedules->groupBy(function ($schedule) {
+                return $schedule->teacher_id . '_' . $schedule->schedule_date;
+            });
+        });
+
+        // Fetch additional data required by the Blade template
+        $rooms = Room::orderBy('roomname')->paginate(10); // Adjust pagination as needed, or use ->get() if not paginating rooms
+        $teachers = User::role('teacher')->orderBy('name')->get(); // Assuming teachers are users with 'teacher' role
+        $students = Student::orderBy('name')->get();
+        $subjects = Subject::orderBy('subjectname')->get();
+
+        return view('schedules.index', compact(
+            'schedulesByRoom', // This is the main data for your table
+            'rooms',          // Needed for iterating through rooms
+            'teachers',       // Needed for teacher dropdown
+            'students',       // Needed for student dropdown
+            'subjects',       // Needed for subject dropdown
+            'studentName',
+            'teacherName',
+            'date'
+        ));
+    }
      
      
     
@@ -90,118 +108,124 @@ class ScheduleController extends Controller
      */
 
 
-     public function store(Request $request)
-     {
-         // Validate input data
-         $validatedData = $request->validate([
-             'start_date' => 'required|date',
-             'end_date' => 'required|date|after_or_equal:start_date',
-             'student_id' => 'required|exists:students,id',
-             'student_room_id' => 'nullable|exists:rooms,id',
-             'teacher_id' => 'required|exists:users,id',
-             'subject_id' => 'required|exists:subjects,id',
-             'room_id' => 'required|exists:rooms,id',
-             'schedule_time' => 'required|in:08:00,09:00,10:00,11:00,12:00,13:00,14:00,15:00,16:00,17:00',
-         ]);
-     
-         $validatedData['status'] = 'N/A';
-     
-         // Define time slot columns
-         $timeSlots = [
-             '08:00' => 'time_8_00_8_50',
-             '09:00' => 'time_9_00_9_50',
-             '10:00' => 'time_10_00_10_50',
-             '11:00' => 'time_11_00_11_50',
-             '12:00' => 'time_12_00_12_50',
-             '13:00' => 'time_13_00_13_50',
-             '14:00' => 'time_14_00_14_50',
-             '15:00' => 'time_15_00_15_50',
-             '16:00' => 'time_16_00_16_50',
-             '17:00' => 'time_17_00_17_50',
-         ];
-         $timeSlotColumn = $timeSlots[$request->schedule_time];
-     
-         // Parse the date range into individual dates
-         $startDate = Carbon::parse($request->start_date);
-         $endDate = Carbon::parse($request->end_date);
-         
-         $errorMessages = [];
+ public function store(Request $request)
+    {
+        // Validate input data
+        $validatedData = $request->validate([
+            'schedule_date' => 'required|date',
+            'student_id' => 'required|exists:students,id',
+            'teacher_id' => 'required|exists:users,id', // Make sure 'users' table holds teacher IDs
+            'subject_id' => 'required|exists:subjects,id',
+            'room_id' => 'required|exists:rooms,id',
+            'schedule_time' => 'required|in:08:00,09:00,10:00,11:00,12:00,13:00,14:00,15:00,16:00,17:00',
+        ]);
+
+        // Map time slot to column name
+        $timeSlots = [
+            '08:00' => 'time_8_00_8_50',
+            '09:00' => 'time_9_00_9_50',
+            '10:00' => 'time_10_00_10_50',
+            '11:00' => 'time_11_00_11_50',
+            '12:00' => 'time_12_00_12_50',
+            '13:00' => 'time_13_00_13_50',
+            '14:00' => 'time_14_00_14_50',
+            '15:00' => 'time_15_00_15_50',
+            '16:00' => 'time_16_00_16_50',
+            '17:00' => 'time_17_00_17_50',
+        ];
+        
+        $timeSlotColumn = $timeSlots[$request->schedule_time];
+        $validatedData[$timeSlotColumn] = 1;
+        $validatedData['status'] = 'N/A';
+        // $validatedData['schedule_date'] = $request->schedule_date;
+
+        // // Check for conflicts
+        // $conflicts = $this->checkScheduleConflicts($validatedData, $timeSlotColumn);
+        // if (!empty($conflicts)) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => implode('\n', $conflicts)
+        //     ], 422);
+        // }
+
+        // Create the schedule
+        $schedule = Schedule::create($validatedData);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Schedule created successfully!'
+        ]);
+    }
+
+    // private function checkScheduleConflicts($data, $timeSlotColumn)
+    // {
+    //     $conflicts = [];
+        
+    //     // Check if teacher is already scheduled
+    //     $teacherConflict = Schedule::where('teacher_id', $data['teacher_id'])
+    //         ->where('schedule_date', $data['schedule_date'])
+    //         ->where($timeSlotColumn, 1)
+    //         ->exists();
+        
+    //     if ($teacherConflict) {
+    //         $conflicts[] = 'Teacher is already scheduled at this time.';
+    //     }
+
+    //     // Check if student is already scheduled
+    //     $studentConflict = Schedule::where('student_id', $data['student_id'])
+    //         ->where('schedule_date', $data['schedule_date'])
+    //         ->where($timeSlotColumn, 1)
+    //         ->exists();
+        
+    //     if ($studentConflict) {
+    //         $conflicts[] = 'Student is already scheduled at this time.';
+    //     }
+
+    //     // Check if room is already booked
+    //     $roomConflict = Schedule::where('room_id', $data['room_id'])
+    //         ->where('schedule_date', $data['schedule_date'])
+    //         ->where($timeSlotColumn, 1)
+    //         ->exists();
+        
+    //     if ($roomConflict) {
+    //         $conflicts[] = 'Room is already booked at this time.';
+    //     }
+
+    //     return $conflicts;
+    // }
+
+    // You will also need a delete method for individual schedules
+    public function destroy(Schedule $schedule)
+    {
+        try {
+            $schedule->delete();
+            return response()->json(['success' => true, 'message' => 'Schedule deleted successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error deleting schedule: ' . $e->getMessage()], 500);
+        }
+    }
+
+    // Example for a bulk delete method (add this to your controller and routes)
+    public function deleteByRoomAndDate(Request $request)
+    {
+        $request->validate([
+            'room_id' => 'required|exists:rooms,id',
+            'schedule_date' => 'required|date',
+        ]);
+
+        try {
+            Schedule::where('room_id', $request->room_id)
+                    ->where('schedule_date', $request->schedule_date)
+                    ->delete();
+
+            return response()->json(['success' => true, 'message' => 'All schedules for the specified room and date deleted successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error deleting schedules: ' . $e->getMessage()], 500);
+        }
+    }
 
      
-         while ($startDate->lte($endDate)) {
-             $formattedDate = $startDate->format('Y-m-d');
-     
-             // **Check if the teacher already has a schedule in the same room and time slot**
-             $existingTeacherSchedule = Schedule::where('teacher_id', $request->teacher_id)
-                 ->where('room_id', $request->room_id)
-                 ->where('schedule_date', $formattedDate)
-                 ->where($timeSlotColumn, 1)
-                 ->exists();
-     
-             if ($existingTeacherSchedule) {
-                 $errorMessages[] = "The teacher is already scheduled in Room {$request->room_id->roomname} at {$request->schedule_time} on {$formattedDate}.";
-             }
 
-            // Check if the room is already booked for the given date and timeslot
-                $existingRoomSchedule = Schedule::where('room_id', $request->room_id)
-                ->where('schedule_date', $formattedDate)
-                ->where($timeSlotColumn, 1)
-                ->exists();
-
-                if ($existingRoomSchedule) {
-                $errorMessages[] = "The room is already scheduled at {$request->schedule_time} on {$formattedDate}.";
-                }
-
-                // Check if the teacher is already scheduled for the same date and timeslot (regardless of room)
-                $existingTeacherSchedule = Schedule::where('teacher_id', $request->teacher_id)
-                ->where('schedule_date', $formattedDate)
-                ->where($timeSlotColumn, 1)
-                ->exists();
-
-                if ($existingTeacherSchedule) {
-                $errorMessages[] = "The teacher is already booked at {$request->schedule_time} on {$formattedDate}, regardless of the room number.";
-                }
-
-             // **Check if the student is already assigned to another teacher in the same time slot**
-             $existingStudentSchedule = Schedule::where('student_id', $request->student_id)
-                 ->where('schedule_date', $formattedDate)
-                 ->where($timeSlotColumn, 1)
-                 ->exists();
-     
-             if ($existingStudentSchedule) {
-                 $errorMessages[] = "The student is already assigned to another teacher at {$request->schedule_time} on {$formattedDate}.";
-             }
-     
-             // Stop scheduling if there are conflicts
-             if (!empty($errorMessages)) {
-                 return redirect()->back()->withErrors($errorMessages);
-             }
-     
-             // Create a new schedule entry
-             $schedule = new Schedule($validatedData);
-             $schedule->schedule_date = $formattedDate;
-             $schedule->setAttribute($timeSlotColumn, 1); // Mark time slot as occupied
-             $schedule->student_room_id = $request->student_room_id;
-             $schedule->save();
-     
-             // Log the activity for schedule update
-             ActivityLog::create([
-                 'activity' => 'Scheduled added for Student ' . $schedule->student->name . 
-                             ' with Teacher ' . $schedule->teacher->name . 
-                             ' for Subject ' . $schedule->subject->subjectname .
-                             ' in Student room ' . $schedule->room->roomname .
-                             ' with Status ' . $schedule->status . 
-                             ' in Room ' . $schedule->room->roomname,
-                 'model_type' => 'Schedule',
-                 'model_id' => $schedule->id,
-             ]);
-     
-             $startDate->addDay();
-         }
-     
-         return redirect()->route('schedules.input')->with('success', 'Schedules created successfully!');
-     }
-     
 
      public function edit($id)
      {
@@ -215,6 +239,7 @@ class ScheduleController extends Controller
      }
       
     
+
      public function update(Request $request, $id)
      {
          // Validate request data
@@ -267,6 +292,8 @@ class ScheduleController extends Controller
     }
     
     
+
+
     // this method will enable the function to update the status of the students in the modal
     public function updateStatus(Request $request, $id)
     {
@@ -299,6 +326,7 @@ class ScheduleController extends Controller
     }
     
     
+
     // this method will enable the function to show the report of the schedule
     public function generateReport(Request $request)
     {
@@ -312,7 +340,7 @@ class ScheduleController extends Controller
         // Include soft-deleted records in the query
         $schedulesQuery = Schedule::withTrashed()->with(['subject', 'student', 'room']);
     
-        // Filter by date if provided 
+        // Filter by date if provided  
         if ($date) {
             $schedulesQuery->whereDate('schedule_date', $date);
         }
@@ -329,7 +357,7 @@ class ScheduleController extends Controller
 
 
     
-        // Apply pagination
+        // Apply pagination 
         $schedules = $schedulesQuery->paginate(10);
     
         // Return the view with schedules and filters
@@ -337,6 +365,7 @@ class ScheduleController extends Controller
     }
     
     
+
     
     public function show(Request $request)
     {
@@ -386,86 +415,88 @@ class ScheduleController extends Controller
     }
     
 
-     public function input(Request $request)
-    {
-         
-        $user = Auth::user(); // Get the authenticated user 
-    
-        // Retrieve filter parameters
-        $teacherName = $request->query('teacher_name', '');
-        $studentName = $request->query('student_name', '');
-        $date = $request->input('date', '');
-    
-        // Base query with relationships
-        $query = Schedule::with(['student', 'teacher', 'subject', 'room'])
-                         ->orderBy('schedule_date', 'desc') // newest schedules first
-                         ->orderBy('created_at', 'desc'); // newest schedules first
-    
-        // Apply date filter only if a date is selected 
-            $query->whereDate('schedule_date', Carbon::today());
-       
-        // If the user is a teacher, filter schedules by their teacher_id 
-        if ($user && $user->hasRole('teacher')) {
-            $query->where('teacher_id', $user->id);
-        }
-    
-        // Filter by teacher name (if provided)
-        if ($teacherName) {
-            $query->whereHas('teacher', function ($q) use ($teacherName) {
-                $q->where('name', 'like', '%' . $teacherName . '%');
-            });
-        }
-    
-        // Filter by student name (if provided) at the database level 
-        if ($studentName) {
-            $query->whereHas('student', function ($q) use ($studentName) {
-                $q->where('name', 'like', '%' . $studentName . '%');
-            });
-        } 
-    
-        // Apply pagination before fetching results 
-        $schedules = $query->paginate(1000); // Adjust the number as needed 
-    
-        // Group schedules by teacher, room, and schedule date
-        $groupedSchedules = $schedules->groupBy(function ($schedule) {
-            return $schedule->teacher_id . '_' . $schedule->room_id . '_' . $schedule->schedule_date;
+
+
+  
+public function input(Request $request)
+{
+    $user = Auth::user();
+
+    $students = Student::all();
+    $teachers = Teacher::all();
+    $subjects = Subject::all();
+    $rooms = Room::all();
+
+    $teacherName = $request->query('teacher_name', '');
+    $studentName = $request->query('student_name', '');
+
+    $query = Schedule::with(['student', 'teacher', 'subject', 'room'])
+        ->join('rooms', 'schedules.room_id', '=', 'rooms.id')
+        ->orderBy('rooms.roomname', 'asc')
+        ->orderBy('schedule_date', 'desc')
+        ->orderBy('schedules.created_at', 'desc')
+        ->select('schedules.*');
+
+    if ($teacherName) {
+        $query->whereHas('teacher', function ($q) use ($teacherName) {
+            $q->where('name', 'like', '%' . $teacherName . '%');
         });
-    
-        return view('schedules.input', compact('groupedSchedules', 'studentName', 'teacherName', 'schedules', 'date'));
     }
 
+    if ($studentName) {
+        $query->whereHas('student', function ($q) use ($studentName) {
+            $q->where('name', 'like', '%' . $studentName . '%');
+        });
+    }
+
+    $schedules = $query->get(); // Use get() instead of paginate() so we can group better
+
+    // Group schedules by room name
+    $schedulesByRoom = $schedules->groupBy(function ($schedule) {
+        return $schedule->room->roomname ?? 'Unknown Room';
+    });
+
+    $rooms = Room::orderBy('roomname')->paginate(50); // Get all rooms
+    
+
+    return view('schedules.input', compact('schedulesByRoom', 'rooms', 'teacherName', 'studentName', 'students', 'teachers', 'subjects'));
+}
+
 
     
+
     /**
      * Remove the specified resource from storage. | the method below will enable the function to delete the data
      */
-    public function destroy(string $id)
-    {
-        // Find the schedule by ID 
-        $schedule = Schedule::with(['student', 'teacher', 'subject', 'room'])->findOrFail($id);
+    // public function destroy(string $id)
+    // {
+    //     // Find the schedule by ID 
+    //     $schedule = Schedule::with(['student', 'teacher', 'subject', 'room'])->findOrFail($id);
 
-        if (!$schedule) {
-            return redirect()->back()->with('error', 'Schedule not found.');
-        }
+    //     if (!$schedule) {
+    //         return redirect()->back()->with('error', 'Schedule not found.');
+    //     }
     
-        // Log the activity for schedule deletion so that admin can know what was deleted this function will enable the function to delete the data 
-        ActivityLog::create([
-            'activity' => 'Schedule deleted for Student ' . $schedule->student->name . 
-                        ' in Student room ' . $schedule->room->roomname .
-                          ' with Teacher ' . $schedule->teacher->name . 
-                          ' for Subject ' . $schedule->subject->subjectname . 
-                          ' in Room ' . $schedule->room->roomname,
-            'model_type' => 'Schedule',
-            'model_id' => $schedule->id,
-        ]);
+        // // Log the activity for schedule deletion so that admin can know what was deleted this function will enable the function to delete the data 
+        // ActivityLog::create([
+        //     'activity' => 'Schedule deleted for Student ' . $schedule->student->name . 
+        //                 ' in Student room ' . $schedule->room->roomname .
+        //                   ' with Teacher ' . $schedule->teacher->name . 
+        //                   ' for Subject ' . $schedule->subject->subjectname . 
+        //                   ' in Room ' . $schedule->room->roomname,
+        //     'model_type' => 'Schedule',
+        //     'model_id' => $schedule->id,
+        // ]);
     
         // Delete the schedule from the database   
-        $schedule->delete();
+    //     $schedule->delete();
     
-        // Redirect to the schedules index page with a success message 
-        return redirect()->route('schedules.index')->with('success', 'Schedule deleted successfully.');
-    }
+    //     // Redirect to the schedules index page with a success message 
+    //     return redirect()->route('schedules.index')->with('success', 'Schedule deleted successfully.');
+    // }
     
+
+
 
     // delete method to delete the row by room and specific date
     public function destroyByRoomAndDate($roomId, $scheduleDate)

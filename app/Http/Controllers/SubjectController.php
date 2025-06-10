@@ -22,7 +22,7 @@ class SubjectController extends Controller
                 $query->where('subjectname', 'like', '%' . $subjectName . '%');
             })
             ->orderBy('subjectname', 'asc')
-            ->paginate(10);    
+            ->paginate(100);    
 
         return view('subjects.index', compact('subjects', 'subjectName'));
     }

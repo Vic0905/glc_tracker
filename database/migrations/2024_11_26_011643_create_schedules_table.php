@@ -12,15 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('schedules', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('student_id')->constrained()->onDelete('cascade');
-            $table->foreignId('teacher_id')->constrained()->onDelete('cascade');
-            $table->foreignId('subject_id')->constrained()->onDelete('cascade');
-            $table->date('schedule_date');
-            $table->time('schedule_time');
-            $table->enum('status', ['present MTM', 'present GRP', 'absent MTM', 'absent GRP']);
-            $table->timestamps();
-        });
+    $table->id();
+    $table->foreignId('student_id')->constrained()->onDelete('cascade');
+    $table->foreignId('teacher_id')->constrained('users')->onDelete('cascade'); // 👈 fixed
+    $table->foreignId('subject_id')->constrained()->onDelete('cascade');
+    $table->date('schedule_date');
+    $table->time('schedule_time');
+    $table->enum('status', ['present MTM', 'present GRP', 'absent MTM', 'absent GRP', 'N/A'])->default('N/A'); // Optional: set default
+    $table->timestamps();
+});
     }
 
     /**

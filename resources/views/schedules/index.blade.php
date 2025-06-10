@@ -2,7 +2,7 @@
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Schedules') }}
-            <span class="text-sm text-gray-500">({{ $schedules->total() }} schedules)</span>
+            {{-- <span class="text-sm text-gray-500">({{ $schedules->total() }} schedules)</span> --}}
         </h2>
     </x-slot>
         

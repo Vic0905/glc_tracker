@@ -43,24 +43,24 @@
 <!--  Schedules Table -->
 <div class="bg-white shadow-xl rounded-2xl overflow-hidden max-w-full max-h-[600px] overflow-y-auto text-sm font-sans">
     <table class="min-w-full border-separate border-spacing-0 text-sm">
-        <thead class="text-gray-900 sticky top-0 z-10 shadow">
+        <thead class="text-gray-100 sticky top-0 z-10 shadow">
             <!-- New row showing the date above -->
             <tr>
-                <th colspan="13" class="px-4 py-2 text-center text-xl font-semibold border border-gray-700 bg-orange-600">
+                <th colspan="13" class=" text-gray-800 px-4 py-2 text-center text-xl font-semibold border border-gray-700 bg-orange-600">
                     Schedules for {{ \Carbon\Carbon::today()->format('F d, Y') }}
                 </th>
             </tr>
             {{-- Header --}}
             <tr>
-                <th class=" bg-gray-100 px-3 py-1 border border-gray-400 text-left text-sm">Teacher</th>
-                <th class=" bg-gray-100 px-3 py-1 border border-gray-400 text-left text-sm">Room</th>
+                <th class=" bg-gray-700 px-3 py-1 border border-gray-600 text-left text-sm">Teacher</th>
+                <th class=" bg-gray-700 px-3 py-1 border border-gray-600 text-left text-sm">Room</th>
 
                 @foreach(['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'] as $time)
                     @php
                         $startTime = \Carbon\Carbon::createFromFormat('H:i', $time);
                         $endTime = $startTime->copy()->addMinutes(50);
                     @endphp
-                    <th class="bg-blue-200 px-3 py-1 border border-gray-400 text-center whitespace-nowrap text-sm ">
+                    <th class="bg-blue-200 text-gray-900 px-3 py-1 border border-gray-400 text-center whitespace-nowrap text-sm ">
                         {{ $startTime->format('H:i') }}<br>to<br>{{ $endTime->format('H:i') }}
                     </th>
                 @endforeach

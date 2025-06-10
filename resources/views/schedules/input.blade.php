@@ -2,14 +2,14 @@
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Input Schedule') }}
-            <span class="text-gray-500 text-sm mr-8">({{ $schedules->total() }} schedules)</span>
+        
         </h2>
     </x-slot>
 
-    <div class="flex flex-wrap md:flex-nowrap justify-center items-center p-5 space-x-4 w-full">
+            <div class="flex flex-wrap md:flex-nowrap justify-center items-center mt-2 p-5 space-x-4 w-full">
                 <!-- Search Input (Centered on Mobile) -->
                 <div class="flex flex-col items-center w-full">
-                    <form action="{{ route('schedules.available') }}" method="GET" class="flex flex-col md:flex-row items-center gap-2 w-full max-w-md">
+                    <form action="{{ route('schedules.input') }}" method="GET" class="flex flex-col md:flex-row items-center gap-2 w-full max-w-md">
                         <div class="relative w-full text-gray-800 uppercase font-bold">
                             <input type="text" name="teacher_name" value="{{ request('teacher_name') }}" placeholder="Search by teacher name"
                                 class="block w-full px-4 py-3 pl-10 text-gray-800 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300 ease-in-out"/>
@@ -25,14 +25,6 @@
                         </button>
                     </form>
                 </div>
-
-                <!-- Add Schedule Button (Centered on Mobile) -->
-                <div class="flex justify-center w-full mt-3">
-                    <a href="{{ route('schedules.create') }}" 
-                    class="w-full md:w-auto bg-gray-900 hover:bg-transparent px-6 py-2 text-sm font-medium tracking-wider border-2 border-gray-500 hover:border-gray-500 text-white hover:text-gray-900 rounded-xl transition duration-150 ease-in">
-                        Add Schedule
-                    </a>
-                </div>  
              
                 <!-- Add Schedule Button (Centered on Mobile) -->
                 <div class="flex justify-center w-full mt-3">
@@ -47,28 +39,27 @@
                     </a>
                 </div>  
             </div>
-
-<!--  Schedules Table -->
-<div class="bg-white shadow-xl rounded-2xl overflow-hidden max-w-full max-h-[600px] overflow-y-auto text-sm font-sans">
+ 
+     <div class="bg-white shadow-xl rounded-2xl overflow-hidden max-w-full max-h-[700px] overflow-y-auto text-sm font-sans">
     <table class="min-w-full border-separate border-spacing-0 text-sm">
-        <thead class="text-gray-900 sticky top-0 z-10 shadow">
-            {{-- Header --}}
+        <thead class="bg-slate-800 text-gray-100 sticky top-0 z-10 shadow">
             <tr>
-                <th class=" bg-gray-100 px-1 py-1 border border-gray-400 text-left text-sm">Teacher's Name</th>
-                <th class=" bg-gray-100 px-3 py-1 border border-gray-400 text-left text-sm">Room</th>
-
+                <th class="px-4 py-3 border border-gray-700 text-left text-sm">Teacher</th>
+                <th class="px-4 py-3 border border-gray-700 text-left text-sm">Room</th>
                 @foreach(['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'] as $time)
                     @php
                         $startTime = \Carbon\Carbon::createFromFormat('H:i', $time);
                         $endTime = $startTime->copy()->addMinutes(50);
                     @endphp
-                    <th class="bg-orange-200 px-3 py-1 border border-gray-400 text-center whitespace-nowrap text-sm ">
+                    <th class="px-4 py-3 border border-gray-700 text-center whitespace-nowrap text-xs">
                         {{ $startTime->format('H:i') }}<br>to<br>{{ $endTime->format('H:i') }}
                     </th>
                 @endforeach
+                {{-- @role('admin')
+                    <th class="px-4 py-3 border border-gray-700 text-center text-sm">Actions</th>
+                @endrole --}}
             </tr>
         </thead>
-
         <tbody>
             @php
                 $timeSlots = [
@@ -80,155 +71,277 @@
                     '13:00' => 'time_13_00_13_50',
                     '14:00' => 'time_14_00_14_50',
                     '15:00' => 'time_15_00_15_50',
-                    '16:00' => 'time_16_00_16_50',
+                    '16:00' => 'time_16_00_16_50', 
                     '17:00' => 'time_17_00_17_50',
                 ];
             @endphp
+            
+            @foreach ($rooms as $room)
+                @php
+                    $groups = $schedulesByRoom[$room->roomname] ?? collect([]);
+                    $groupedByTeacherAndDate = $groups->groupBy(function ($schedule) {
+                        return $schedule->teacher_id . '_' . $schedule->schedule_date;
+                    });
+                @endphp
 
-            @foreach($groupedSchedules as $group)
-                <tr class="hover:bg-slate-50 align-top transition text-xs">
-                    <td class="px-4 py-3 border border-gray-200 font-medium">
-                        <a href="#" onclick="event.preventDefault(); showTeacherStudents({{ $group->first()->teacher->user->id }}, '{{ $group->first()->schedule_date }}')" 
-                           class="text-blue-600 hover:underline">
-                            {{ $group->first()->teacher->name ?? 'N/A' }}
-                        </a>
-                    </td>
-                    <td class="px-4 py-3 border border-gray-200 font-bold">{{ $group->first()->room->roomname ?? 'N/A' }}</td>
-                
-
-                    @foreach(['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'] as $time)
-                        @php
-                            $slotKey = $timeSlots[$time] ?? null;
-                            $scheduledStudents = $group->filter(fn($schedule) => $slotKey && $schedule->{$slotKey});
-                        @endphp
-                        <td class="px-1 py-1 border border-gray-200 align-top">
-                            @if($scheduledStudents->isNotEmpty())
-                                @foreach($scheduledStudents as $schedule)
-                                    @php
-                                        $status = $schedule->status ?? 'N/A';
-                                        $isAbsent = in_array($status, ['N/A', 'absent GRP', 'absent MTM']);
-                                        $bgColor = $isAbsent ? 'bg-red-100' : 'bg-green-100';
-                                        $textColor = $isAbsent ? 'text-red-700' : 'text-green-700';
-                                    @endphp
-                                    <div class="{{ $bgColor }} rounded-lg mb-1 p-2 shadow-sm">
-                                        <strong>{{ $schedule->student->name ?? 'N/A' }}</strong><br>
-                                        <span class="text-xs text-gray-600">{{ optional($schedule->studentRoom)->roomname ?? 'N/A' }}</span><br>
-                                        <span class="text-xs {{ $textColor }}">({{ $status }})</span>
-                                    </div>
+                @if ($groupedByTeacherAndDate->isEmpty())
+                    <tr>
+                        <td class="px-4 py-3 border text-sm text-gray-500"> 
+                            <select name="teacher_id" class="teacher-select block w-full appearance-none text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-xl p-3 pr-10 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" data-room-id="{{ $room->id }}">
+                                <option value="" selected class="text-gray-400">Choose a Teacher</option>
+                                @foreach($teachers->sortBy('name') as $teacher)
+                                    <option value="{{ $teacher->user_id }}">{{ $teacher->name }}</option>
                                 @endforeach
-                            @else
-                                <span class="text-gray-400 text-xs italic">---</span>
-                            @endif
+                            </select>
                         </td>
+                        <td class="px-4 py-3 border font-bold">{{ $room->roomname }}</td>
+                        @foreach ($timeSlots as $time => $slotKey)
+                            <td class="px-1 py-2 border text-center text-xs text-gray-500">
+                                <form class="schedule-form" data-room-id="{{ $room->id }}" data-time-slot="{{ $time }}" data-slot-key="{{ $slotKey }}">
+                                    @csrf
+                                    <input type="hidden" name="room_id" value="{{ $room->id }}">
+                                    <input type="hidden" name="schedule_time" value="{{ $time }}">
+                                    <input type="hidden" name="{{ $slotKey }}" value="1">
+                                    <input type="hidden" name="schedule_date" value="{{ now()->format('Y-m-d') }}">
+                                    
+                                    {{-- THIS IS THE CRUCIAL ADDITION for empty rows --}}
+                                    <input type="hidden" name="teacher_id" value=""> 
+                                    
+                                    <select name="student_id" class="block w-full text-xs py-1 px-2 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-1" required>
+                                        <option value="" selected>Select Student</option>
+                                        @foreach($students->sortBy('name') as $student)
+                                            <option value="{{ $student->id }}">{{ $student->name }}</option>
+                                        @endforeach
+                                    </select>
+
+                                    <select name="subject_id" class="block w-full text-xs py-1 px-2 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                                        <option value="" selected>Select Subject</option>
+                                        @foreach($subjects->sortBy('subjectname') as $subject)
+                                            <option value="{{ $subject->id }}">{{ $subject->subjectname }}</option>
+                                        @endforeach
+                                    </select>
+                                </form>
+                            </td>
+                        @endforeach
+                        {{-- @role('admin')
+                            <td class="px-4 py-3 border text-center text-xs text-gray-500">---</td>
+                        @endrole --}}
+                    </tr>
+                @else
+                    @foreach ($groupedByTeacherAndDate as $group)
+                        <tr class="hover:bg-slate-50 align-top transition text-xs">
+                            <td class="px-4 py-3 border font-medium text-sm">
+                                    {{ $group->first()->teacher->name ?? 'N/A' }}
+                            </td>
+                            <td class="px-4 py-3 border font-bold">{{ $room->roomname }}</td>
+
+                            @foreach ($timeSlots as $time => $slotKey)
+                                @php
+                                    $scheduledStudents = $group->filter(fn($schedule) => $schedule->{$slotKey});
+                                @endphp
+                                <td class="px-1 py-2 border align-top">
+                                    @if($scheduledStudents->isNotEmpty())
+                                        @foreach($scheduledStudents as $schedule)
+                                        <div class="schedule-item">
+                                            <div class="text-xs text-gray-600">{{ $schedule->student->name ?? 'N/A' }}</div>
+                                            <div class="text-xs text-gray-600">{{ optional($schedule->subject)->subjectname ?? 'N/A' }}</div>
+                                            <button onclick="deleteSchedule({{ $schedule->id }})" class="text-red-500 text-xs hover:underline">Delete</button>
+                                        </div>
+                                        @endforeach
+                                    @else
+                                        <form class="schedule-form" data-room-id="{{ $room->id }}" data-time-slot="{{ $time }}" data-slot-key="{{ $slotKey }}">
+                                            @csrf
+                                            {{-- This hidden input is already present here --}}
+                                            <input type="hidden" name="teacher_id" value="{{ $group->first()->teacher_id }}">
+                                            <input type="hidden" name="room_id" value="{{ $room->id }}">
+                                            <input type="hidden" name="schedule_time" value="{{ $time }}">
+                                            <input type="hidden" name="{{ $slotKey }}" value="1">
+                                            <input type="hidden" name="schedule_date" value="{{ $group->first()->schedule_date }}">
+                                            
+                                            <select name="student_id" class="block w-full text-xs py-1 px-2 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-1" required>
+                                                <option value="" selected>Select Student</option>
+                                                @foreach($students->sortBy('name') as $student)
+                                                    <option value="{{ $student->id }}">{{ $student->name }}</option>
+                                                @endforeach
+                                            </select>
+
+                                            <select name="subject_id" class="block w-full text-xs py-1 px-2 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                                                <option value="" selected>Select Subject</option>
+                                                @foreach($subjects->sortBy('subjectname') as $subject)
+                                                    <option value="{{ $subject->id }}">{{ $subject->subjectname }}</option>
+                                                @endforeach
+                                            </select>
+                                        </form>
+                                    @endif
+                                </td>
+                            @endforeach
+                            {{-- @role('admin')
+                                <td class="px-4 py-3 border text-center">
+                                    <button onclick="confirmDeleteByRoomAndDate({{ $group->first()->room_id }}, '{{ $group->first()->schedule_date }}')"
+                                        class="bg-red-500 hover:bg-transparent px-5 py-2 text-xs shadow-sm hover:shadow-lg font-medium tracking-wider 
+                                            border-2 border-red-500 hover:border-red-500 text-white hover:text-red-500 rounded-xl transition ease-in duration-100">
+                                        Delete All
+                                    </button>
+                                </td>
+                            @endrole --}}
+                        </tr>
                     @endforeach
-                </tr>
+                @endif
             @endforeach
         </tbody>
     </table>
-    <div id="teacherStudentsModalContainer"></div>
+    <div class="flex justify-end text-xs mt-4">
+        {{ $rooms->links() }}
+    </div>
 </div>
-
-{{-- code to call the modal delete from the partial --}}
-</div>
+<div id="teacherStudentsModalContainer"></div>
 
 <script>
-    // Function to show the teacher's students modal 
-    function showTeacherStudents(teacherId, scheduleDate) {
-    fetch(`/teachers/${teacherId}/students/${scheduleDate}`)
-        .then(response => response.text()) // Fetch as HTML
-        .then(html => {
-            document.getElementById('teacherStudentsModalContainer').innerHTML = html;
-            document.getElementById('teacherStudentsModal').classList.remove('hidden');
-            attachStatusChangeListeners(); // Attach event listeners for status change
-        })
-        .catch(error => {
-            console.error('Error loading students:', error);
-            alert('Error loading students. Please check the console.');
-        });
-}
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle form submissions when dropdowns change
+    document.querySelectorAll('.schedule-form select').forEach(select => {
+        select.addEventListener('change', function() {
+            const form = this.closest('form');
+            const studentSelect = form.querySelector('select[name="student_id"]');
+            const subjectSelect = form.querySelector('select[name="subject_id"]');
+            
+            const row = this.closest('tr');
+            const teacherSelect = row.querySelector('.teacher-select'); // This exists only for empty rows
+            let teacherId = null; // Initialize as null
 
-function closeTeacherStudentsModal() {
-    document.getElementById('teacherStudentsModal').classList.add('hidden');
-}
+            // Get teacher_id from hidden input for existing teacher rows, or from select for new rows
+            const teacherIdInput = form.querySelector('input[name="teacher_id"]');
+            if (teacherIdInput) {
+                teacherId = teacherIdInput.value;
+            } else if (teacherSelect) { // Fallback for rows with the teacher dropdown
+                teacherId = teacherSelect.value;
+            }
+
+            // TEMP: Add console logs to see the values immediately
+            console.log('--- Form Submission Check ---');
+            console.log('Student value:', studentSelect.value);
+            console.log('Subject value:', subjectSelect.value);
+            console.log('Teacher ID (from hidden input or select):', teacherId);
+            console.log('Is teacherIdInput present?', !!teacherIdInput);
+            console.log('Is teacherSelect present?', !!teacherSelect);
+            console.log('Is the submit condition met?', !!studentSelect.value && !!subjectSelect.value && !!teacherId);
+            console.log('----------------------------');
 
 
-// Add Event Listeners to Status Select Dropdowns
-function attachStatusChangeListeners() {
-    document.querySelectorAll('.status-select').forEach(select => {
-        select.addEventListener('change', function () {
-            let studentId = this.dataset.studentId;
-            let newStatus = this.value;
-
-            updateStudentStatus(studentId, newStatus);
+            // Only submit if student, subject, AND teacher fields have values
+            if (studentSelect.value && subjectSelect.value && teacherId) {
+                const formData = new FormData(form);
+                
+                fetch("{{ route('schedules.store') }}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                    },
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errorData => {
+                            throw new Error(errorData.message || 'Server error: ' + response.statusText);
+                        }).catch(() => {
+                            throw new Error('Server error: ' + response.statusText);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert(data.message || 'Unknown error creating schedule'); 
+                        studentSelect.value = '';
+                        subjectSelect.value = '';
+                    }
+                })
+                .catch(error => {
+                    console.error('Fetch Error:', error);
+                    alert('An error occurred during scheduling: ' + error.message);
+                    studentSelect.value = '';
+                    subjectSelect.value = '';
+                });
+            } else {
+                // TEMP: Log if the condition is not met
+                console.log('Form not submitted: Missing student, subject, or teacher ID.');
+            }
         });
     });
-}
-    // Function to open the delete modal (duplicate removal handled)
-    function openModal(id) {
-        document.getElementById('deleteForm').action = '/schedules/' + id; 
-        document.getElementById('deleteModal').classList.remove('hidden');
-    }
 
-    // Function to close the delete modal to avoid duplication
-    function closeModal() {
-        document.getElementById('deleteModal').classList.add('hidden');
-    }
-
-    // function to confirm the deletion of a schedule in the modal
-    function confirmDelete(studentId) {
-        const deleteModal = document.getElementById("deleteModal");
-        const deleteForm = document.getElementById("deleteForm");
-
-        // Set the form action dynamically
-        deleteForm.action = "{{ route('schedules.destroy', '') }}/" + studentId;
-
-        // Show the modal
-        deleteModal.classList.remove("hidden");
-        deleteModal.classList.add("flex");
-    }
-
-    function closeModal() {
-        const deleteModal = document.getElementById("deleteModal");
-        deleteModal.classList.add("hidden");
-        deleteModal.classList.remove("flex");
-    }
-
-
-   
- // delete all schedules for a room on a specific date  
-    let deleteRoomId, deleteScheduleDate;
-
-function confirmDeleteByRoomAndDate(roomId, scheduleDate) {
-    deleteRoomId = roomId;
-    deleteScheduleDate = scheduleDate;
-    document.getElementById('roomdeleteModal').classList.remove('hidden');
-}
-
-function roomcloseModal() {
-    document.getElementById('roomdeleteModal').classList.add('hidden');
-}
-
-document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
-    fetch(`/schedules/delete-room-date/${deleteRoomId}/${deleteScheduleDate}`, {
-        method: 'DELETE',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Content-Type': 'application/json'
-        }
-    }).then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert("Schedules deleted successfully.");
-            location.reload(); // Refresh the page to reflect changes 
-        } else {
-            alert("Failed to delete schedules.");
-        }
-        roomcloseModal();
-    }).catch(error => {
-        console.error("Error:", error);
-        roomcloseModal();
+    // Handle teacher selection change (This block seems correct for empty rows)
+    document.querySelectorAll('.teacher-select').forEach(select => {
+        select.addEventListener('change', function() {
+            const teacherId = this.value;
+            const roomId = this.dataset.roomId;
+            
+            document.querySelectorAll(`tr .schedule-form input[name="room_id"][value="${roomId}"]`).forEach(input => {
+                const form = input.closest('form');
+                const teacherIdInput = form.querySelector('input[name="teacher_id"]');
+                if (teacherIdInput) {
+                    teacherIdInput.value = teacherId;
+                }
+            });
+        });
     });
 });
+
+function deleteSchedule(scheduleId) {
+    if (confirm('Are you sure you want to delete this schedule?')) {
+        fetch(`/schedules/${scheduleId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.message || 'Error deleting schedule');
+            }
+        });
+    }
+}
+
+// Function to show teacher students (assuming this is defined elsewhere)
+function showTeacherStudents(teacherId, scheduleDate) {
+    // Implement logic to show a modal or redirect with teacher's students
+    alert(`Showing students for Teacher ID: ${teacherId} on Date: ${scheduleDate}`);
+  
+}
+
+// Function to confirm delete by room and date (assuming this is defined elsewhere)
+function confirmDeleteByRoomAndDate(roomId, scheduleDate) {
+    if (confirm('Are you sure you want to delete all schedules for this room on this date?')) {
+        fetch(`/schedules/delete-by-room-date`, {
+            method: 'POST', // Or DELETE if your route supports it
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({ room_id: roomId, schedule_date: scheduleDate })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.message || 'Error deleting schedules by room and date');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred during bulk deletion.');
+        });
+    }
+}
 </script>
 
 </x-app-layout>

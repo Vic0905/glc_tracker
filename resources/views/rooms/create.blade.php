@@ -10,11 +10,30 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-gray-100">
 
+                    <!-- Success Message -->
+                    @if(session('success'))
+                        <div id="successMessage"
+                            class="fixed top-12 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', () => {
+                            const successMessage = document.getElementById('successMessage');
+                            if (successMessage) {
+                                setTimeout(() => {
+                                    successMessage.style.transition = 'opacity 1s ease';
+                                    successMessage.style.opacity = '0';
+                                    setTimeout(() => successMessage.remove(), 500);
+                                }, 3000);
+                            }
+                        });
+                    </script>
+
                     <div class="max-w-md mx-auto bg-gray-100 p-10 rounded-lg shadow-lg">
                         <form action="{{ route('rooms.store') }}" method="POST" class="space-y-6">
                             @csrf
-
-                            
                         <!-- Back Button -->
                         <div class="flex justify-right mb-6">
                             <a href="{{ url()->previous() }}" 

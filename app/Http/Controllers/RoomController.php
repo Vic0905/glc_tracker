@@ -12,9 +12,6 @@ class RoomController extends Controller
     {
         // get all the rooms 
         $roomName = $request->query('room_name'); // Fix the query parameter name
-        
-        // Get the search term from the query string
-        $roomName = $request->query('room_name');
 
           // Query the subjects table, using the correct column name 'subjectname'
           $rooms = Room::query()
@@ -23,9 +20,11 @@ class RoomController extends Controller
           })
           ->orderBy('roomname', 'asc') // Sort alphabetically
           ->paginate(20); // Display 5 rooms per page
+
+          $roomCount = $rooms->count(); // Count the number of rooms
     
 
-        return view('rooms.index', compact('rooms', 'roomName'));
+        return view('rooms.index', compact('rooms', 'roomName', 'roomCount'));
     }
 
     public function create()
@@ -46,7 +45,7 @@ class RoomController extends Controller
         ]);
 
         // Redirect to the subjects list with success message
-        return redirect()->route('rooms.index')->with('success', 'Room added successfully.');
+        return redirect()->route('rooms.create')->with('success', 'Room added successfully.');
     }
 
     public function edit($id)
