@@ -1,3 +1,14 @@
+ADMIN DASHBOARD
+![1](https://github.com/user-attachments/assets/fb820932-06b1-4f84-8c9c-5f127b9a9c87)
+ADMIN SCHEDULE TABLE 
+![2](https://github.com/user-attachments/assets/95642db2-0fe7-47ce-9dab-3b3c2f16e822)
+TEACHER'S TABLE
+![T1](https://github.com/user-attachments/assets/ff9be35a-7b68-4091-b968-40d2c7ccfe96)
+TEACHER CAN CHANGE THE STATUS OF THE STUDENTS
+![T2](https://github.com/user-attachments/assets/734133d6-6589-4340-9b01-321cc0b9ea1f)
+
+
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
