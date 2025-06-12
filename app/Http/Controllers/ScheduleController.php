@@ -199,10 +199,11 @@ class ScheduleController extends Controller
     {
         try {
             $schedule->delete();
-            return response()->json(['success' => true, 'message' => 'Schedule deleted successfully.']);
+            return redirect()->route('schedules.index')->with('success', 'Schedule deleted successfully.');
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Error deleting schedule: ' . $e->getMessage()], 500);
         }
+         return redirect()->route('schedules.index')->with('success', 'Schedule deleted successfully.');
     }
 
     // Example for a bulk delete method (add this to your controller and routes)
@@ -418,49 +419,49 @@ class ScheduleController extends Controller
 
 
   
-public function input(Request $request)
-{
-    $user = Auth::user();
+    public function input(Request $request)
+    {
+        $user = Auth::user();
 
-    $students = Student::all();
-    $teachers = Teacher::all();
-    $subjects = Subject::all();
-    $rooms = Room::all();
+        $students = Student::all();
+        $teachers = Teacher::all();
+        $subjects = Subject::all();
+        $rooms = Room::all();
 
-    $teacherName = $request->query('teacher_name', '');
-    $studentName = $request->query('student_name', '');
+        $teacherName = $request->query('teacher_name', '');
+        $studentName = $request->query('student_name', '');
 
-    $query = Schedule::with(['student', 'teacher', 'subject', 'room'])
-        ->join('rooms', 'schedules.room_id', '=', 'rooms.id')
-        ->orderBy('rooms.roomname', 'asc')
-        ->orderBy('schedule_date', 'desc')
-        ->orderBy('schedules.created_at', 'desc')
-        ->select('schedules.*');
+        $query = Schedule::with(['student', 'teacher', 'subject', 'room'])
+            ->join('rooms', 'schedules.room_id', '=', 'rooms.id')
+            ->orderBy('rooms.roomname', 'asc')
+            ->orderBy('schedule_date', 'desc')
+            ->orderBy('schedules.created_at', 'desc')
+            ->select('schedules.*');
 
-    if ($teacherName) {
-        $query->whereHas('teacher', function ($q) use ($teacherName) {
-            $q->where('name', 'like', '%' . $teacherName . '%');
+        if ($teacherName) {
+            $query->whereHas('teacher', function ($q) use ($teacherName) {
+                $q->where('name', 'like', '%' . $teacherName . '%');
+            });
+        }
+
+        if ($studentName) {
+            $query->whereHas('student', function ($q) use ($studentName) {
+                $q->where('name', 'like', '%' . $studentName . '%');
+            });
+        }
+
+        $schedules = $query->get(); // Use get() instead of paginate() so we can group better
+
+        // Group schedules by room name
+        $schedulesByRoom = $schedules->groupBy(function ($schedule) {
+            return $schedule->room->roomname ?? 'Unknown Room';
         });
+
+        $rooms = Room::orderBy('roomname')->paginate(50); // Get all rooms
+        
+
+        return view('schedules.input', compact('schedulesByRoom', 'rooms', 'teacherName', 'studentName', 'students', 'teachers', 'subjects'));
     }
-
-    if ($studentName) {
-        $query->whereHas('student', function ($q) use ($studentName) {
-            $q->where('name', 'like', '%' . $studentName . '%');
-        });
-    }
-
-    $schedules = $query->get(); // Use get() instead of paginate() so we can group better
-
-    // Group schedules by room name
-    $schedulesByRoom = $schedules->groupBy(function ($schedule) {
-        return $schedule->room->roomname ?? 'Unknown Room';
-    });
-
-    $rooms = Room::orderBy('roomname')->paginate(50); // Get all rooms
-    
-
-    return view('schedules.input', compact('schedulesByRoom', 'rooms', 'teacherName', 'studentName', 'students', 'teachers', 'subjects'));
-}
 
 
     
