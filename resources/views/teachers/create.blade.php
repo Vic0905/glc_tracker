@@ -66,7 +66,7 @@
                                 class="block w-full text-lg py-3 px-4 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 placeholder="Enter teacher's email" 
                                 required
-                                value="{{ old('email') }}">
+                                value="@gmail.com">
                             @error('email')
                                 <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
                             @enderror
@@ -80,7 +80,8 @@
                                 name="password" 
                                 id="password" 
                                 class="block w-full text-lg py-3 px-4 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Enter teacher's password" 
+                                placeholder="Enter teacher's password"
+                                value="00000000" 
                                 required>
                             @error('password')
                                 <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
@@ -95,7 +96,8 @@
                                 name="password_confirmation" 
                                 id="password_confirmation" 
                                 class="block w-full text-lg py-3 px-4 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Confirm password" 
+                                placeholder="Confirm password"
+                                value="00000000" 
                                 required>
                         </div>
 

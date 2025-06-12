@@ -42,16 +42,16 @@
  
      <div class="bg-white shadow-xl rounded-2xl overflow-hidden max-w-full max-h-[700px] overflow-y-auto text-sm font-sans">
     <table class="min-w-full border-separate border-spacing-0 text-sm">
-        <thead class="bg-slate-800 text-gray-100 sticky top-0 z-10 shadow">
+        <thead class="bg-gray-100 text-gray-900 sticky top-0 z-10 shadow">
             <tr>
-                <th class="px-4 py-3 border border-gray-700 text-left text-sm">Teacher</th>
-                <th class="px-4 py-3 border border-gray-700 text-left text-sm">Room</th>
+                <th class="px-4 py-3 border border-gray-200 text-left text-sm">Teacher</th>
+                <th class="px-4 py-3 border border-gray-200 text-left text-sm">Room</th>
                 @foreach(['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'] as $time)
                     @php
                         $startTime = \Carbon\Carbon::createFromFormat('H:i', $time);
                         $endTime = $startTime->copy()->addMinutes(50);
                     @endphp
-                    <th class="px-4 py-3 border border-gray-700 text-center whitespace-nowrap text-xs">
+                    <th class="px-4 py-3 border border-gray-200 text-center whitespace-nowrap text-xs">
                         {{ $startTime->format('H:i') }}<br>to<br>{{ $endTime->format('H:i') }}
                     </th>
                 @endforeach
@@ -142,7 +142,7 @@
                                 <td class="px-1 py-2 border align-top">
                                     @if($scheduledStudents->isNotEmpty())
                                         @foreach($scheduledStudents as $schedule)
-                                        <div class="schedule-item">
+                                        <div class="schedule-item bg-gray-100 border rounded-md ">
                                             <div class="text-xs text-gray-600">{{ $schedule->student->name ?? 'N/A' }}</div>
                                             <div class="text-xs text-gray-600">{{ optional($schedule->subject)->subjectname ?? 'N/A' }}</div>
                                             <button onclick="deleteSchedule({{ $schedule->id }})" class="text-red-500 text-xs hover:underline">Delete</button>
@@ -309,12 +309,12 @@ function deleteSchedule(scheduleId) {
     }
 }
 
-// Function to show teacher students (assuming this is defined elsewhere)
-function showTeacherStudents(teacherId, scheduleDate) {
-    // Implement logic to show a modal or redirect with teacher's students
-    alert(`Showing students for Teacher ID: ${teacherId} on Date: ${scheduleDate}`);
+// // Function to show teacher students (assuming this is defined elsewhere)
+// function showTeacherStudents(teacherId, scheduleDate) {
+//     // Implement logic to show a modal or redirect with teacher's students
+//     alert(`Showing students for Teacher ID: ${teacherId} on Date: ${scheduleDate}`);
   
-}
+// }
 
 // Function to confirm delete by room and date (assuming this is defined elsewhere)
 function confirmDeleteByRoomAndDate(roomId, scheduleDate) {

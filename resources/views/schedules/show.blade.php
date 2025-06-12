@@ -27,6 +27,7 @@
                 </div>
              
                 <!-- Add Schedule Button (Centered on Mobile) -->
+                @role('admin')
                 <div class="flex justify-center w-full mt-3">
                     <a href="{{ route('schedules.index') }}" 
                     class="flex justify-center gap-2 items-center mx-auto shadow-xl text-md bg-gray-50 backdrop-blur-md lg:font-semibold isolation-auto border-gray-50 before:absolute before:w-full before:transition-all before:duration-500 before:hover:w-full before:-left-full before:hover:left-0 before:rounded-full before:bg-gray-900 hover:text-gray-50 before:-z-10 before:aspect-square before:hover:scale-150 before:hover:duration-500 relative z-10 px-4 py-2 overflow-hidden border-2 rounded-full group">
@@ -38,29 +39,30 @@
                         </svg>
                     </a>
                 </div>  
+                @endrole
             </div>
 
 <!--  Schedules Table -->
 <div class="bg-white shadow-xl rounded-2xl overflow-hidden max-w-full max-h-[600px] overflow-y-auto text-sm font-sans">
     <table class="min-w-full border-separate border-spacing-0 text-sm">
-        <thead class="text-gray-100 sticky top-0 z-10 shadow">
+        <thead class="text-gray-900 sticky top-0 z-10 shadow">
             <!-- New row showing the date above -->
             <tr>
-                <th colspan="13" class=" text-gray-800 px-4 py-2 text-center text-xl font-semibold border border-gray-700 bg-orange-600">
+                <th colspan="13" class=" text-gray-100 px-4 py-2 text-center text-xl font-semibold border border-gray-600 bg-slate-900">
                     Schedules for {{ \Carbon\Carbon::today()->format('F d, Y') }}
                 </th>
             </tr>
             {{-- Header --}}
             <tr>
-                <th class=" bg-gray-700 px-3 py-1 border border-gray-600 text-left text-sm">Teacher</th>
-                <th class=" bg-gray-700 px-3 py-1 border border-gray-600 text-left text-sm">Room</th>
+                <th class=" bg-gray-100 px-3 py-1 border border-gray-200 text-left text-sm">Teacher</th>
+                <th class=" bg-gray-100 px-3 py-1 border border-gray-200 text-left text-sm">Room</th>
 
                 @foreach(['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'] as $time)
                     @php
                         $startTime = \Carbon\Carbon::createFromFormat('H:i', $time);
                         $endTime = $startTime->copy()->addMinutes(50);
                     @endphp
-                    <th class="bg-blue-200 text-gray-900 px-3 py-1 border border-gray-400 text-center whitespace-nowrap text-sm ">
+                    <th class="bg-gray-100 text-gray-900 px-3 py-1 border border-gray-200 text-center whitespace-nowrap text-sm ">
                         {{ $startTime->format('H:i') }}<br>to<br>{{ $endTime->format('H:i') }}
                     </th>
                 @endforeach
@@ -110,7 +112,6 @@
                                     @endphp
                                     <div class="{{ $bgColor }} rounded-lg mb-1 p-2 shadow-sm">
                                         <strong>{{ $schedule->student->name ?? 'N/A' }}</strong><br>
-                                        <span class="text-xs text-gray-600">{{ optional($schedule->studentRoom)->roomname ?? 'N/A' }}</span><br>
                                         <span class="text-xs {{ $textColor }}">({{ $status }})</span>
                                     </div>
                                 @endforeach
@@ -180,7 +181,7 @@ function attachStatusChangeListeners() {
         // Set the form action dynamically
         deleteForm.action = "{{ route('schedules.destroy', '') }}/" + studentId;
 
-        // Show the modal
+        // Show the modal 
         deleteModal.classList.remove("hidden");
         deleteModal.classList.add("flex");
     }

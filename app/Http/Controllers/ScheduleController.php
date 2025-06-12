@@ -110,7 +110,7 @@ class ScheduleController extends Controller
 
  public function store(Request $request)
     {
-        // Validate input data
+        // Validate input data 
         $validatedData = $request->validate([
             'schedule_date' => 'required|date',
             'student_id' => 'required|exists:students,id',
@@ -120,7 +120,7 @@ class ScheduleController extends Controller
             'schedule_time' => 'required|in:08:00,09:00,10:00,11:00,12:00,13:00,14:00,15:00,16:00,17:00',
         ]);
 
-        // Map time slot to column name
+        // Map time slot to column name 
         $timeSlots = [
             '08:00' => 'time_8_00_8_50',
             '09:00' => 'time_9_00_9_50',
@@ -238,6 +238,7 @@ class ScheduleController extends Controller
          return view('schedules.edit', compact('schedule', 'students', 'teachers', 'subjects', 'rooms'));
      }
       
+
     
 
      public function update(Request $request, $id)
@@ -378,8 +379,7 @@ class ScheduleController extends Controller
     
         // Base query with relationships
         $query = Schedule::with(['student', 'teacher', 'subject', 'room'])
-                         ->orderBy('schedule_date', 'desc') // newest schedules first
-                         ->orderBy('created_at', 'desc'); // newest schedules first
+                            ->join('rooms', 'schedules.room_id', '=', 'rooms.id');
     
         // Apply date filter only if a date is selected 
             $query->whereDate('schedule_date', Carbon::today());

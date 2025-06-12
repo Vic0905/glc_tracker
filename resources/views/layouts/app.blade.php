@@ -31,11 +31,37 @@
             @endisset
 
             <!-- Page Content -->
-            <main class=">
+            <main>
                 <div x-data="">
                     {{ $slot }}
                 </div>
             </main>
         </div>
-    </body>
+    </body> 
+  {{-- <body class="font-sans antialiased bg-gray-100 overflow-x-hidden">
+    <div x-data="{ open: true }" class="flex min-h-screen transition-all duration-300 ease-in-out">
+
+        @include('layouts.sidebar') <!-- Sidebar shares `open` state -->
+
+        <div class="flex-1 flex flex-col transition-all duration-300"
+             :class="open ? 'ml-54' : 'ml-20'">
+            
+            <!-- Page Heading -->
+            @isset($header)
+                <header class="bg-white shadow">
+                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                        {{ $header }}
+                    </div>
+                </header>
+            @endisset
+
+            <!-- Page Content -->
+            <main class="flex-1 p-6">
+                {{ $slot }}
+            </main>
+        </div>
+    </div>
+</body> --}}
+
+
 </html>

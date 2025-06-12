@@ -1,206 +1,200 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
-    <!-- Primary Navigation Menu -->
+<nav x-data="{ open: false }" class="bg-white border-b border-gray-200 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
-                    </a>
-                </div>
+        <div class="flex justify-between h-16 items-center">
+            <!-- Logo -->
+            <div class="flex items-center space-x-4">
+                <a href="{{ route('dashboard') }}">
+                    <x-application-logo class="h-9 w-auto text-gray-800" />
+                </a>
+            </div>
 
-
-                <!-- Admin Only Navigation -->
+            <!-- Desktop Nav Links -->
+            <div class="hidden sm:flex sm:items-center space-x-6">
                 @role('admin')
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
+                        <div class="flex flex-col items-center group relative">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-600" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <rect width="7" height="9" x="3" y="3" rx="1"/>
+                                <rect width="7" height="5" x="14" y="3" rx="1"/>
+                                <rect width="7" height="9" x="14" y="12" rx="1"/>
+                                <rect width="7" height="5" x="3" y="16" rx="1"/>
+                            </svg>
+                            <span class="absolute top-8 mt-1 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition duration-200 z-10">
+                                Dashboard
+                            </span>
+                        </div>
                     </x-nav-link>
-                </div>
-                
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+
                     <x-nav-link :href="route('students.index')" :active="request()->routeIs('students.index')">
-                        {{ __('Students') }}
+                        <div class="flex flex-col items-center group relative">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-600" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 14v7" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 10v6a7 7 0 0014 0v-6" />
+                            </svg>
+                            <span class="absolute top-8 mt-1 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition duration-200 z-10">
+                                Students
+                            </span>
+                        </div>
                     </x-nav-link>
-                </div>
 
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('subjects.index')" :active="request()->routeIs('subjects.index')">
-                        {{ __('Subjects') }}
+                        <div class="flex flex-col items-center group relative">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-600" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 19.5A2.5 2.5 0 016.5 17H20M4 4.5A2.5 2.5 0 016.5 7H20v13H6.5a2.5 2.5 0 01-2.5-2.5v-13z" />
+                            </svg>
+                            <span class="absolute top-8 mt-1 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition duration-200 z-10">
+                                Subjects
+                            </span>
+                        </div>
                     </x-nav-link>
-                </div>
 
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('rooms.index')" :active="request()->routeIs('rooms.index')">
-                        {{ __('Rooms') }}
+                        <div class="flex flex-col items-center group relative">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-600" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="12" rx="2" ry="2" />
+                                <path d="M7 20h10" />
+                                <path d="M9 16v4" />
+                                <path d="M15 16v4" />
+                            </svg>
+                            <span class="absolute top-8 mt-1 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition duration-200 z-10">
+                                Rooms
+                            </span>
+                        </div>
                     </x-nav-link>
-                </div>
 
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('teachers.index')" :active="request()->routeIs('teachers.index')">
-                        {{ __('Teachers') }}
+                        <div class="flex flex-col items-center group relative">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-600" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path d="M4 19h16M4 15h16M8 15v4M16 15v4" />
+                                <circle cx="12" cy="8" r="3" />
+                                <path d="M10 11h4" />
+                            </svg>
+                            <span class="absolute top-8 mt-1 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition duration-200 z-10">
+                                Teachers
+                            </span>
+                        </div>
                     </x-nav-link>
-                </div>
 
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('schedules.index')" :active="request()->routeIs('schedules.index')">
-                        {{ __('Schedules') }}
+                        <div class="flex flex-col items-center group relative">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-600" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                                <path d="M9 14h.01M15 14h.01M12 17h.01"/>
+                            </svg>
+                            <span class="absolute top-8 mt-1 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition duration-200 z-10">
+                                Schedules
+                            </span>
+                        </div>
                     </x-nav-link>
-                </div>
 
-                {{-- <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('schedules.report')" :active="request()->routeIs('schedules.report')">
-                        {{ __('Reports') }}
-                    </x-nav-link>                    
-                </div>
-
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.index')">
-                        {{ __('Users') }}
-                    </x-nav-link>                    
-                </div> --}}
                 @endrole
 
                 @role('teacher')
-
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
+                       <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                        <div class="flex flex-col items-center group relative">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-600" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <rect width="7" height="9" x="3" y="3" rx="1"/>
+                                <rect width="7" height="5" x="14" y="3" rx="1"/>
+                                <rect width="7" height="9" x="14" y="12" rx="1"/>
+                                <rect width="7" height="5" x="3" y="16" rx="1"/>
+                            </svg>
+                            <span class="absolute top-8 mt-1 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition duration-200 z-10">
+                                Dashboard
+                            </span>
+                        </div>
                     </x-nav-link>
-                </div>
-
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('schedules.index')" :active="request()->routeIs('schedules.index')">
-                        {{ __('My Schedules') }}
+                    <x-nav-link :href="route('schedules.available')" :active="request()->routeIs('schedules.available')">
+                       <div class="flex flex-col items-center group relative">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-600" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                                <path d="M9 14h.01M15 14h.01M12 17h.01"/>
+                            </svg>
+                            <span class="absolute top-8 mt-1 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition duration-200 z-10">
+                                Schedules
+                            </span>
+                        </div>
                     </x-nav-link>
-                </div>
                 @endrole
             </div>
 
-            <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <!-- User Dropdown -->
+            <div class="hidden sm:flex sm:items-center">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                            <div>{{ Auth::user()->name }}</div>
-                            <div class="ms-1">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
+                        <button class="flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 focus:outline-none">
+                            <span>{{ Auth::user()->name }}</span>
+                            <svg class="ml-2 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.292l3.71-4.06a.75.75 0 111.08 1.04l-4.25 4.64a.75.75 0 01-1.08 0l-4.25-4.64a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                            </svg>
                         </button>
                     </x-slot>
 
                     <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
-                        </x-dropdown-link>
-
-                        <!-- Authentication -->
+                        <x-dropdown-link :href="route('profile.edit')">Profile</x-dropdown-link>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-
-                            <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
-                                                this.closest('form').submit();">
-                                {{ __('Log Out') }}
+                            <x-dropdown-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">
+                                Log Out
                             </x-dropdown-link>
                         </form>
                     </x-slot>
                 </x-dropdown>
             </div>
 
-            <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            <!-- Hamburger Icon (Mobile) -->
+            <div class="sm:hidden">
+                <button @click="open = !open" class="p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path :class="{ 'hidden': open, 'inline-flex': !open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        <path :class="{ 'hidden': !open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-        
-                      <!-- Admin Only Navigation -->
-                      @role('admin')
-                      <!-- Navigation responsive Links -->
-                          <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                              {{ __('Dashboard') }}
-                          </x-responsive-nav-link>
-                         
-                          <x-responsive-nav-link :href="route('students.index')" :active="request()->routeIs('students.index')">
-                              {{ __('Students') }}
-                          </x-responsive-nav-link>
-                                  
-                          <x-responsive-nav-link :href="route('subjects.index')" :active="request()->routeIs('subjects.index')">
-                              {{ __('Subjects') }}
-                          </x-responsive-nav-link>
+    <!-- Mobile Menu -->
+    <div :class="{ 'block': open, 'hidden': !open }" class="sm:hidden px-4 pb-4 space-y-2">
+        @role('admin')
+            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">Dashboard</x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('students.index')" :active="request()->routeIs('students.index')">Students</x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('subjects.index')" :active="request()->routeIs('subjects.index')">Subjects</x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('rooms.index')" :active="request()->routeIs('rooms.index')">Rooms</x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('teachers.index')" :active="request()->routeIs('teachers.index')">Teachers</x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('schedules.index')" :active="request()->routeIs('schedules.index')">Schedules</x-responsive-nav-link>
+        @endrole
 
-                          <x-responsive-nav-link :href="route('rooms.index')" :active="request()->routeIs('rooms.index')">
-                              {{ __('Rooms') }}
-                          </x-responsive-nav-link>
-                                    
-                          <x-responsive-nav-link :href="route('teachers.index')" :active="request()->routeIs('teachers.index')">
-                              {{ __('Teachers') }}
-                          </x-responsive-nav-link>
-                                
-                          <x-responsive-nav-link :href="route('schedules.index')" :active="request()->routeIs('schedules.index')">
-                              {{ __('Schedules') }}
-                          </x-responsive-nav-link>
-              
-                          {{-- <x-responsive-nav-link :href="route('schedules.report')" :active="request()->routeIs('schedules.report')">
-                              {{ __('Reports') }}
-                          </x-responsive-nav-link>                     --}}
-                            
-                          {{-- <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.index')">
-                              {{ __('Users') }}
-                          </x-responsive-nav-link>                     --}}
-                     
-                      @endrole
-      
-                      @role('teacher')
+        @role('teacher')
+            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">Dashboard</x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('schedules.available')" :active="request()->routeIs('schedules.available')">My Schedules</x-responsive-nav-link>
+        @endrole
 
-                            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                                {{ __('Dashboard') }}
-                            </x-responsive-nav-link>
-                
-                          <x-responsive-nav-link :href="route('schedules.index')" :active="request()->routeIs('schedules.index')">
-                              {{ __('My Schedules') }}
-                          </x-responsive-nav-link>
-                    
-                      @endrole
-            
-        </div>
-
-        
-
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-200">
+        <div class="border-t border-gray-200 pt-4">
             <div class="px-4">
                 <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
                 <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
             </div>
-
             <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
-                </x-responsive-nav-link>
-
-                <!-- Authentication -->
+                <x-responsive-nav-link :href="route('profile.edit')">Profile</x-responsive-nav-link>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-
-                    <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();">
-                        {{ __('Log Out') }}
+                    <x-responsive-nav-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">
+                        Log Out
                     </x-responsive-nav-link>
                 </form>
             </div>

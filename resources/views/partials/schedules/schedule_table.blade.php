@@ -1,22 +1,22 @@
 {{-- Schedule table --}}
 <div class="bg-white shadow-xl rounded-2xl overflow-hidden max-w-full max-h-[600px] overflow-y-auto text-sm font-sans">
     <table class="min-w-full border-separate border-spacing-0 text-sm">
-        <thead class="bg-slate-800 text-gray-100 sticky top-0 z-10 shadow">
+        <thead class="bg-slate-100 text-gray-900 sticky top-0 z-10 shadow">
             <tr>
-                <th class="px-4 py-3 border border-gray-700 text-left text-sm">Teacher</th>
-                <th class="px-4 py-3 border border-gray-700 text-left text-sm">Room</th>
-                <th class="px-4 py-3 border border-gray-700 text-left text-sm">Date</th>
+                <th class="px-4 py-3 border border-gray-200 text-left text-sm">Teacher</th>
+                <th class="px-4 py-3 border border-gray-200 text-left text-sm">Room</th>
+                <th class="px-4 py-3 border border-gray-200 text-left text-sm">Date</th>
                 @foreach(['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'] as $time)
                     @php
                         $startTime = \Carbon\Carbon::createFromFormat('H:i', $time);
                         $endTime = $startTime->copy()->addMinutes(50);
                     @endphp
-                    <th class="px-4 py-3 border border-gray-700 text-center whitespace-nowrap text-xs ">
+                    <th class="px-4 py-3 border border-gray-200 text-center whitespace-nowrap text-xs ">
                         {{ $startTime->format('H:i') }}<br>to<br>{{ $endTime->format('H:i') }}
                     </th>
                 @endforeach
                 @role('admin')
-                    <th class="px-4 py-3 border border-gray-700 text-center text-sm">Actions</th>
+                    <th class="px-4 py-3 border border-gray-200 text-center text-sm">Actions</th>
                 @endrole
             </tr>
         </thead>
@@ -53,10 +53,10 @@
                                 $firstScheduleInGroup = $group->first();
                             @endphp
                             @if($firstScheduleInGroup && $firstScheduleInGroup->teacher)
-                                <a href="#" onclick="event.preventDefault(); showTeacherStudents({{ $firstScheduleInGroup->teacher->id }}, '{{ $firstScheduleInGroup->schedule_date }}')"
-                                    class="text-blue-600 hover:underline">
-                                    {{ $firstScheduleInGroup->teacher->name ?? 'N/A' }}
-                                </a>
+                            <a href="#" onclick="event.preventDefault(); showTeacherStudents({{ $group->first()->teacher->user->id }}, '{{ $group->first()->schedule_date }}')" 
+                                class="text-blue-600 hover:underline">
+                                {{ $group->first()->teacher->name ?? 'N/A' }}
+                            </a>
                             @else
                                 N/A
                             @endif
@@ -81,56 +81,31 @@
                                             $bgColor = $isAbsent ? 'bg-red-100' : 'bg-green-100';
                                             $textColor = $isAbsent ? 'text-red-700' : 'text-green-700';
                                         @endphp
-                                        <div class="{{ $bgColor }} rounded-lg mb-1 p-2 shadow-sm">
-                                            <strong>{{ $schedule->student->name ?? 'N/A' }}</strong><br>
-                                            <span class="text-xs text-gray-600">{{ optional($schedule->room)->roomname ?? 'N/A' }}</span><br>
-                                            <span class="text-xs {{ $textColor }}">({{ $status }})</span>
-                                            @role('admin')
-                                                <form action="{{ route('schedules.destroy', $schedule->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this schedule for {{ $schedule->student->name ?? '' }} at {{ $time }}?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="text-red-500 hover:text-red-700 ml-1 text-xs">
-                                                        <i class="fa-solid fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            @endrole
+                                        {{-- Note: roomname is removed from here if the row already indicates the room --}}
+                                        <div class="{{ $bgColor }} rounded-lg mb-1 p-2 shadow-sm border border-gray-200">
+                                            <div class="flex items-center justify-between mb-1">
+                                                <strong class="text-gray-800 text-xs">{{ $schedule->student->name ?? 'N/A' }}</strong>
+                                                <span class="px-2 py-0.5 inline-flex text-xs leading-4 font-semibold rounded-full {{ $bgColor }} {{ $textColor }}">
+                                                    {{ $status }}
+                                                </span>
+                                            </div>
+                                            <div class="text-gray-600 text-xs flex items-center">
+                                                <svg class="w-3 h-3 mr-1 text-gray-500" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M96 0C43 0 0 43 0 96L0 416c0 53 43 96 96 96l288 0 32 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l0-64c17.7 0 32-14.3 32-32l0-320c0-17.7-14.3-32-32-32L384 0 96 0zm0 384l256 0 0 64L96 448c-17.7 0-32-14.3-32-32s14.3-32 32-32zm32-240c0-8.8 7.2-16 16-16l192 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-192 0c-8.8 0-16-7.2-16-16zm16 48l192 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-192 0c-8.8 0-16-7.2-16-16s7.2-16 16-16z" clip-rule="evenodd"></path></svg>
+                                                {{ optional($schedule->subject)->subjectname ?? 'N/A' }}
+                                            </div>
                                         </div>
                                     @endforeach
-                                @else
-                                    {{-- Form to add new schedule if the slot is empty but the row exists --}}
-                                    <form class="schedule-form" method="POST" action="{{ route('schedules.store') }}">
-                                        @csrf
-                                        <input type="hidden" name="schedule_date" value="{{ \Carbon\Carbon::parse($firstScheduleInGroup->schedule_date)->format('Y-m-d') }}">
-                                        <input type="hidden" name="schedule_time" value="{{ $time }}">
-                                        <input type="hidden" name="room_id" value="{{ $room->id }}">
-                                        <input type="hidden" name="teacher_id" value="{{ $firstScheduleInGroup->teacher->id ?? '' }}">
-                                        
-                                        <div class="flex flex-col gap-1">
-                                            <select name="student_id" class="block w-full text-xs border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                                <option value="">Select Student</option>
-                                                @foreach($students as $student)
-                                                    <option value="{{ $student->id }}">{{ $student->name }}</option>
-                                                @endforeach
-                                            </select>
-                                            <select name="subject_id" class="block w-full text-xs border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                                <option value="">Select Subject</option>
-                                                @foreach($subjects as $subject)
-                                                    <option value="{{ $subject->id }}">{{ $subject->subjectname }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </form>
                                 @endif
                             </td>
                         @endforeach
-
+                        
+                        {{-- Actions column for admin --}}
                          @role('admin')
-                        <td class="px-4 py-3 border border-gray-100 text-center">
-                            <button onclick="confirmDeleteByRoomAndDate({{ $schedule->room_id }}, '{{ $schedule->schedule_date }}')"
-                                class="bg-red-500 hover:bg-transparent px-5 py-2 text-xs shadow-sm hover:shadow-lg font-medium tracking-wider
-                                border-2 border-red-500 hover:border-red-500 text-white hover:text-red-500 rounded-xl transition ease-in duration-100">
+                        <td class="px-4 py-3 border border-gray-100 text-center align-middle">
+                            <a onclick="confirmDeleteByRoomAndDate({{ $schedule->room_id }}, '{{ $schedule->schedule_date }}')"
+                                class="text-red-500 hover:text-red-700 text-xs cursor-pointer hover:underline">
                                 Delete All
-                            </button>
+                            </a>
                         </td>
                         @endrole 
                     </tr>
@@ -138,6 +113,7 @@
             @endforeach
         </tbody>
     </table>
+    <div id="teacherStudentsModalContainer"></div>
 </div>
 
 <div class="flex justify-between items-center mt-4 mb-2 gap-4 flex-wrap">
@@ -161,3 +137,4 @@
         {{ $rooms->links('vendor.pagination.tailwind') }} {{-- Assuming rooms is paginated --}}
     </div> 
 </div>
+
