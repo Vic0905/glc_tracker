@@ -1,7 +1,10 @@
 ADMIN DASHBOARD
-![1](https://github.com/user-attachments/assets/fb820932-06b1-4f84-8c9c-5f127b9a9c87)
+![admin dash](https://github.com/user-attachments/assets/50045666-2525-4133-a519-e65e846bb964)
 ADMIN SCHEDULE TABLE 
-![2](https://github.com/user-attachments/assets/95642db2-0fe7-47ce-9dab-3b3c2f16e822)
+![admin index](https://github.com/user-attachments/assets/9eaf48af-2c86-4a3b-bd31-2ee62c840f04)
+ADMIN SCHEDULE INPUT
+![admin input](https://github.com/user-attachments/assets/cc833888-5c15-408b-a5b3-d0aee5623343)
+
 TEACHER'S TABLE
 ![T1](https://github.com/user-attachments/assets/ff9be35a-7b68-4091-b968-40d2c7ccfe96)
 TEACHER CAN CHANGE THE STATUS OF THE STUDENTS
