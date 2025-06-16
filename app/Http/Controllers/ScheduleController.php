@@ -405,7 +405,7 @@ class ScheduleController extends Controller
         }
     
         // Apply pagination before fetching results 
-        $schedules = $query->paginate(1000); // Adjust the number as needed
+        $schedules = $query->paginate(20); // Adjust the number as needed
     
         // Group schedules by teacher, room, and schedule date
         $groupedSchedules = $schedules->groupBy(function ($schedule) {
@@ -457,7 +457,7 @@ class ScheduleController extends Controller
             return $schedule->room->roomname ?? 'Unknown Room';
         });
 
-        $rooms = Room::orderBy('roomname')->paginate(50); // Get all rooms
+        $rooms = Room::orderBy('roomname')->paginate(20); // Get all rooms
         
 
         return view('schedules.input', compact('schedulesByRoom', 'rooms', 'teacherName', 'studentName', 'students', 'teachers', 'subjects'));

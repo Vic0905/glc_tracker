@@ -22,7 +22,7 @@ class SubjectController extends Controller
                 $query->where('subjectname', 'like', '%' . $subjectName . '%');
             })
             ->orderBy('subjectname', 'asc')
-            ->paginate(100);    
+            ->paginate(10);    
 
         return view('subjects.index', compact('subjects', 'subjectName'));
     }
@@ -45,7 +45,7 @@ class SubjectController extends Controller
         ]);
 
         // Redirect to the subjects list with success message 
-        return redirect()->route('subjects.index')->with('success', 'Subject added successfully.');
+        return redirect()->route('subjects.create')->with('success', 'Subject added successfully.');
     }
 
     public function edit($id)

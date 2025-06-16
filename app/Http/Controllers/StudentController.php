@@ -76,13 +76,6 @@ class StudentController extends Controller
         // find the student by id and delete it from the database
         $student = Student::findOrFail($id);
         $student->delete();
-
-        // Log the activity for deletion (optional)
-        ActivityLog::create([
-            'activity' => 'Student ' . $student->name . ' deleted',
-            'model_type' => 'Student',
-            'model_id' => $student->id,
-        ]);
         
         return redirect()->route('students.index')->with('success', 'Student deleted successfully.');
     }

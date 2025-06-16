@@ -114,7 +114,7 @@
                             </span>
                         </div>
                     </x-nav-link>
-                    <x-nav-link :href="route('schedules.available')" :active="request()->routeIs('schedules.available')">
+                    <x-nav-link :href="route('schedules.index')" :active="request()->routeIs('schedules.index')">
                        <div class="flex flex-col items-center group relative">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-600" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -181,7 +181,7 @@
 
         @role('teacher')
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">Dashboard</x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('schedules.available')" :active="request()->routeIs('schedules.available')">My Schedules</x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('schedules.index')" :active="request()->routeIs('schedules.index')">My Schedules</x-responsive-nav-link>
         @endrole
 
         <div class="border-t border-gray-200 pt-4">

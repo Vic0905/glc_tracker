@@ -19,7 +19,7 @@ class RoomController extends Controller
               $query->where('roomname', 'like', '%' . $roomName . '%');
           })
           ->orderBy('roomname', 'asc') // Sort alphabetically
-          ->paginate(20); // Display 5 rooms per page
+          ->paginate(10); // Display 5 rooms per page
 
           $roomCount = $rooms->count(); // Count the number of rooms
     
