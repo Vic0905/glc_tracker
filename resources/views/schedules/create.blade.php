@@ -14,7 +14,6 @@
                         {{ session('success') }}
                     </div>
                 @endif
-                    {{-- modal timed 5 secs can be alter --}}
                 <script>
                     document.addEventListener('DOMContentLoaded', () => {
                         const successMessage = document.getElementById('successMessage');
@@ -184,7 +183,7 @@
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
 {{--     
     <script>
         $(document).ready(function () {

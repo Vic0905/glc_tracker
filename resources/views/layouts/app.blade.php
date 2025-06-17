@@ -16,7 +16,7 @@
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     </head>
-    <body class="font-sans antialiased">
+    {{-- <body class="font-sans antialiased">
         
         <div class="min-h-screen bg-gray-100">
             @include('layouts.navigation')
@@ -37,8 +37,8 @@
                 </div>
             </main>
         </div>
-    </body> 
-  {{-- <body class="font-sans antialiased bg-gray-100 overflow-x-hidden">
+    </body>  --}}
+  <body class="font-sans antialiased bg-gray-100 overflow-x-hidden">
     <div x-data="{ open: true }" class="flex min-h-screen transition-all duration-300 ease-in-out">
 
         @include('layouts.sidebar') <!-- Sidebar shares `open` state -->
@@ -61,7 +61,7 @@
             </main>
         </div>
     </div>
-</body> --}}
+</body>
 
 
 </html>

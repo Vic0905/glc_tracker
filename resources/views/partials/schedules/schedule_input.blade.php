@@ -3,7 +3,7 @@
         <div class="overflow-x-auto"></div>
         <div class="bg-white shadow-sm sm:rounded-lg p-6">
  
-            <div class="bg-white shadow-xl rounded-2xl overflow-hidden max-w-full max-h-[700px] overflow-y-auto text-sm font-sans">
+            <div class="bg-white shadow-xl rounded-2xl overflow-hidden max-w-full max-h-[600px] overflow-y-auto text-sm font-sans">
                 <table class="min-w-full border-separate border-spacing-0 text-sm">
                     <thead class="bg-gray-100 text-gray-900 sticky top-0 z-10 shadow">
                         <tr>
@@ -153,10 +153,10 @@
                         @endforeach
                     </tbody>
                 </table>
-                <div class="flex justify-end text-xs mt-4">
+            </div>
+            <div class="flex justify-end text-xs mt-2">
                     {{ $rooms->links() }}
                 </div>
-            </div>
         </div>
     </div>
 </div>

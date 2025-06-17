@@ -1,124 +1,102 @@
-<aside x-data="{ open: true }" class="fixed top-0 left-0 h-screen z-50 transition-all duration-300 ease-in-out"
-    :class="open ? 'w-54 bg-gray-200 text-gray-900 shadow-lg' : 'w-10 bg-gray-200 text-white'">
-
-
+<aside class="fixed top-0 left-0 h-screen w-10 z-50 bg-gray-100 text-gray-900 shadow-lg flex flex-col">
     <!-- Sidebar Header -->
-    <div class="flex items-center justify-between p-4">
-        <a href="{{ route('dashboard') }}" class="flex items-center">
-            <x-application-logo class="h-10 w-auto fill-current text-gray-900" />
-            <span x-show="open" class="ml-3 text-lg font-semibold transition-all">GLC</span>
-        </a>
-        <button @click="open = !open" class="p-2 rounded-md hover:bg-gray-300 transition">
-            <svg class="w-6 h-6 transition-transform duration-300" :class="open ? 'rotate-0' : 'rotate-180'"
-                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+    <div class="flex items-center justify-center p-4">
+        <a href="{{ route('dashboard') }}">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-auto" viewBox="0 0 100 100" fill="none">
+                <!-- White background -->
+                <rect width="100" height="100" rx="16" fill="white"/>
+                <!-- Blue text -->
+                <text x="50%" y="55%" text-anchor="middle" fill="#2563EB" font-size="42" font-weight="bold" font-family="Arial, sans-serif" dy=".3em">
+                    GLC
+                </text>
             </svg>
-        </button>
+        </a>
     </div>
-
     <!-- Navigation Links -->
-    <nav class="mt-6">
+   <nav class="mt-6 flex-1">
         <ul class="space-y-1">
             @role('admin')
-                <li>
-                    <a href="{{ route('dashboard') }}"
-                        class="flex items-center px-4 py-3 rounded-lg transition-all hover:bg-gray-700 hover:shadow-md
-                        {{ request()->routeIs('dashboard') ? 'bg-gray-700 text-white shadow-md' : '' }}">
-                        <span class="w-8 text-center">📊</span>
-                        <span x-show="open" class="ml-3">Dashboard</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('students.index') }}"
-                        class="flex items-center px-4 py-3 rounded-lg transition-all hover:bg-gray-700 hover:shadow-md
-                        {{ request()->routeIs('students.index') ? 'bg-gray-700 text-white shadow-md' : '' }}">
-                        <span class="w-8 text-center">🎓</span>
-                        <span x-show="open" class="ml-3">Students</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('subjects.index') }}"
-                        class="flex items-center px-4 py-3 rounded-lg transition-all hover:bg-gray-700 hover:shadow-md
-                        {{ request()->routeIs('subjects.index') ? 'bg-gray-700 text-white shadow-md' : '' }}">
-                        <span class="w-8 text-center">📚</span>
-                        <span x-show="open" class="ml-3">Subjects</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('rooms.index') }}"
-                        class="flex items-center px-4 py-3 rounded-lg transition-all hover:bg-gray-700 hover:shadow-md
-                        {{ request()->routeIs('rooms.index') ? 'bg-gray-700 text-white shadow-md' : '' }}">
-                        <span class="w-8 text-center">🏫</span>
-                        <span x-show="open" class="ml-3">Rooms</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('teachers.index') }}"
-                        class="flex items-center px-4 py-3 rounded-lg transition-all hover:bg-gray-700 hover:shadow-md
-                        {{ request()->routeIs('teachers.index') ? 'bg-gray-700 text-white shadow-md' : '' }}">
-                        <span class="w-8 text-center">👨‍🏫</span>
-                        <span x-show="open" class="ml-3">Teachers</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('schedules.index') }}"
-                        class="flex items-center px-4 py-3 rounded-lg transition-all hover:bg-gray-700 hover:shadow-md
-                        {{ request()->routeIs('schedules.index') ? 'bg-gray-700 text-white shadow-md' : '' }}">
-                        <span class="w-8 text-center">📅</span>
-                        <span x-show="open" class="ml-3">Schedules</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('users.index') }}"
-                        class="flex items-center px-4 py-3 rounded-lg transition-all hover:bg-gray-700 hover:shadow-md
-                        {{ request()->routeIs('users.index') ? 'bg-gray-700 text-white shadow-md' : '' }}">
-                        <span class="w-8 text-center">👥</span>
-                        <span x-show="open" class="ml-3">Users</span>
-                    </a>
-                </li>
+                @php
+                    $links = [
+                        ['route' => 'dashboard', 'label' => 'Dashboard', 'icon' => '📊'],
+                        ['route' => 'students.index', 'label' => 'Students', 'icon' => '🎓'],
+                        ['route' => 'subjects.index', 'label' => 'Subjects', 'icon' => '📚'],
+                        ['route' => 'rooms.index', 'label' => 'Rooms', 'icon' => '🏫'],
+                        ['route' => 'teachers.index', 'label' => 'Teachers', 'icon' => '👨‍🏫'],
+                        ['route' => 'schedules.index', 'label' => 'Schedules', 'icon' => '📅'],
+                    ];
+                @endphp
+
+                @foreach ($links as $link)
+                    <li class="relative">
+                        <a href="{{ route($link['route']) }}"
+                           class="group flex items-center justify-center px-2 py-3 rounded-lg transition-all
+                           {{ request()->routeIs($link['route']) ? 'bg-gray-800 text-white shadow-md' : 'hover:bg-gray-100' }}">
+                            <span>{{ $link['icon'] }}</span>
+                            <span class="absolute left-full top-1/2 -translate-y-1/2 ml-2 bg-gray-900 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-50 shadow-md">
+                                {{ $link['label'] }}
+                            </span>
+                        </a>
+                    </li>
+                @endforeach
             @endrole
 
             @role('teacher')
-                <li>
+                <li class="relative">
                     <a href="{{ route('schedules.index') }}"
-                        class="flex items-center px-4 py-3 rounded-lg transition-all hover:bg-gray-700 hover:shadow-md
-                        {{ request()->routeIs('schedules.index') ? 'bg-gray-700 text-white shadow-md' : '' }}">
-                        <span class="w-8 text-center">📅</span>
-                        <span x-show="open" class="ml-3">My Schedules</span>
+                       class="group flex items-center justify-center px-4 py-3 rounded-lg transition-all
+                       {{ request()->routeIs('schedules.index') ? 'bg-gray-800 text-white shadow-md' : 'hover:bg-gray-100' }}">
+                        <span>📅</span>
+                        <span class="absolute left-full top-1/2 -translate-y-1/2 ml-2 bg-gray-900 text-white text-sm rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-50 shadow-md">
+                            My Schedules
+                        </span>
                     </a>
                 </li>
             @endrole
         </ul>
     </nav>
-     <!-- Settings Dropdown -->
-<div class="mt-auto p-4" x-show="open" x-transition>
-    <x-dropdown align="right" width="48">
-        <x-slot name="trigger">
-            <button class="w-full flex justify-between items-center px-4 py-2 bg-white text-gray-700 hover:bg-gray-300 rounded-md transition">
-                <div>{{ Auth::user()->name }}</div>
-                <svg class="w-4 h-4 ml-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                    <path fill="currentColor" fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                </svg>
-            </button>
-        </x-slot>
 
-       <x-slot name="content">
-    <div class="text-center px-4 py-2">
-        <x-dropdown-link :href="route('profile.edit')" class="justify-center">
-            {{ __('Profile') }}
-        </x-dropdown-link>
+   <!-- Dropdown for Profile & Logout -->
+<div class="relative group p-4">
+    <!-- Trigger Button -->
+    <button class="flex items-center justify-center w-full p-3 rounded-lg hover:bg-gray-100 transition">
+        <span>👤</span>
+        <!-- Tooltip -->
+        <span class="absolute left-full top-1/2 -translate-y-1/2 ml-2 bg-gray-900 text-white text-sm rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-50 shadow-md">
+            Account
+        </span>
+    </button>
 
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <x-dropdown-link :href="route('logout')" class="justify-center"
-                onclick="event.preventDefault(); this.closest('form').submit();">
-                {{ __('Log Out') }}
-            </x-dropdown-link>
-        </form>
+    <!-- Dropdown Content (shown on hover) -->
+    <div class="absolute left-full bottom-4 ml-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 group-hover:opacity-100 group-hover:pointer-events-auto pointer-events-none transition-opacity z-50">
+            <div class="py-2 text-sm text-gray-700">
+                        <!-- Username Display -->
+                <div class="px-4 py-2 font-semibold border-b bg-gray-900 text-white flex items-center space-x-2">
+                    <!-- User Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A9.953 9.953 0 0112 15c2.485 0 4.747.91 6.879 2.404M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+
+                    <!-- Username -->
+                    {{ Auth::user()->name }}
+                </div>
+
+            <!-- Profile Link -->
+            <a href="{{ route('profile.edit') }}" class="block px-4 py-2 hover:bg-gray-100">
+                {{ __('Profile') }}
+            </a>
+
+            <!-- Logout Form -->
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="w-full text-left px-4 py-2 hover:bg-gray-100">
+                    {{ __('Log Out') }}
+                </button>
+            </form>
+        </div>
     </div>
-</x-slot>
-
-    </x-dropdown>
 </div>
+
+
 
 </aside>

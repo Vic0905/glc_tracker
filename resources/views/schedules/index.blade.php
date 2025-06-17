@@ -60,32 +60,6 @@ function attachStatusChangeListeners() {
     });
 }
 
-// // Function to Send PATCH Request
-// function updateStudentStatus(studentId, selectedStatus) {
-//     fetch(`/schedules/${studentId}/status`, { // Ensure route matches web.php
-//         method: "PATCH",
-//         headers: {
-//             "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
-//             "Content-Type": "application/json"
-//         },
-//         body: JSON.stringify({
-//             status: selectedStatus
-//         })
-//     })
-//     .then(response => response.json())
-//     .then(data => {
-//         console.log("Updated successfully:", data);
-//     })
-//     .catch(error => console.error("Error:", error));
-// }
-
-// // function to close the teacher's students modal 
-// function closeTeacherStudentsModal() {
-//     document.getElementById('teacherStudentsModal').classList.add('hidden');
-// }
-
-
-
     // Function to open the delete modal (duplicate removal handled)
     function openModal(id) {
         document.getElementById('deleteForm').action = '/schedules/' + id; 

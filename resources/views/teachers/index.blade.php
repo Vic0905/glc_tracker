@@ -57,23 +57,20 @@
                         
                             <!-- Submit Button -->
                             <button
-                                class="bg-gray-900 hover:bg-transparent px-6 py-2 text-sm shadow-sm hover:shadow-lg font-medium tracking-wider border-2 
-                                border-gray-500 hover:border-gray-500 text-gray-100 hover:text-gray-900 rounded-xl transition ease-in duration-150"
+                                class="bg-gray-900 hover:bg-transparent px-5 py-2 text-sm shadow-sm hover:shadow-lg font-medium tracking-wider
+                                border-2 border-gray-200 hover:border-gray-200 text-gray-100 hover:text-gray-900 rounded-lg transition ease-in duration-100"
                                 type="submit">
                                 Search
                             </button>
                         </form>
 
                         <!-- Add Teacher Button (Right) -->
-                        <div class="flex justify-left mb-6">
+                        <div class="flex justify-left">
                             <a href="{{ route('teachers.create') }}" 
-                            class="flex justify-center gap-2 items-center mx-auto shadow-xl text-lg bg-gray-50 backdrop-blur-md lg:font-semibold isolation-auto border-gray-50 before:absolute before:w-full before:transition-all before:duration-500 before:hover:w-full before:-left-full before:hover:left-0 before:rounded-full before:bg-gray-900 hover:text-gray-50 before:-z-10 before:aspect-square before:hover:scale-150 before:hover:duration-500 relative z-10 px-4 py-2 overflow-hidden border-2 rounded-full group">
+                            class="bg-gray-900 hover:bg-transparent px-5 py-2 text-sm shadow-sm hover:shadow-lg font-medium tracking-wider
+                                border-2 border-gray-200 hover:border-gray-200 text-gray-100 hover:text-gray-900 rounded-lg transition ease-in duration-100">
                                 Add Teacher
-                                <svg class="w-8 h-8 justify-end group-hover:rotate-90 group-hover:bg-gray-50 text-gray-50 ease-linear duration-300 rounded-full border border-gray-700 group-hover:border-none p-2 rotate-45"
-                                    viewBox="0 0 16 19" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M7 18C7 18.5523 7.44772 19 8 19C8.55228 19 9 18.5523 9 18H7ZM8.70711 0.292893C8.31658 -0.0976311 7.68342 -0.0976311 7.29289 0.292893L0.928932 6.65685C0.538408 7.04738 0.538408 7.68054 0.928932 8.07107C1.31946 8.46159 1.95262 8.46159 2.34315 8.07107L8 2.41421L13.6569 8.07107C14.0474 8.46159 14.6805 8.46159 15.0711 8.07107C15.4616 7.68054 15.4616 7.04738 15.0711 6.65685L8.70711 0.292893ZM9 18L9 1H7L7 18H9Z"
-                                        class="fill-gray-800 group-hover:fill-gray-800"></path>
-                                </svg>
+                                
                             </a>
                         </div>
                     </div>
@@ -99,51 +96,31 @@
                                         <td class="px-6 py-4 border-b text-gray-800 text-xs">{{ $teacher->nickname }}</td>
                                         <td class="px-6 py-4 border-b text-gray-800 flex gap-2">
                                             <div class="flex justify-start gap-2">
-                                                <!-- Edit Button -->
-                                                <a href="{{ route('teachers.edit', $teacher->id) }}" class="bg-gray-800 hover:bg-transparent px-5 py-2 text-xs shadow-xs hover:shadow-lg font-medium tracking-wider 
-                                                    border-2 border-gray-500 hover:border-gray-500 text-white hover:text-gray-900 rounded-xl transition ease-in duration-150">Edit</a>
-                                        
-                                                <!-- Delete Button to Trigger Modal -->
-                                                <button onclick="openModal()" class="bg-red-500 hover:bg-transparent px-5 py-2 text-xs shadow-sm hover:shadow-lg font-medium tracking-wider 
-                                                border-2 border-red-500 hover:border-red-500 text-white hover:text-red-500 rounded-xl transition ease-in duration-150">
-                                                    Delete
-                                                </button>                                                        
-                                            </div>
-                                    
-                                            <!-- Modal Background -->
-                                            <div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
-                                                <div class="group select-none w-[250px] flex flex-col p-4 relative items-center justify-center bg-gray-800 border border-gray-800 shadow-lg rounded-2xl">
-                                                    <div>
-                                                        <div class="text-center p-3 flex-auto justify-center">
-                                                            <!-- Modal Icon (SVG) -->
-                                                            <svg fill="currentColor" viewBox="0 0 20 20" class="group-hover:animate-bounce w-12 h-12 flex items-center text-gray-600 fill-red-500 mx-auto" xmlns="http://www.w3.org/2000/svg">
-                                                                <path clip-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" fill-rule="evenodd"></path>
+                                                         <!-- Edit Button -->
+                                                    <button type="button" onclick="openEditModal({{ $teacher->id }}, '{{ $teacher->name }}', '{{ $teacher->nickname }}')"
+                                                            class="group inline-flex items-center text-gray-800 hover:text-blue-600 text-sm cursor-pointer ml-1">
+                                                    <!-- Edit Icon (Pencil) -->
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                            d="M15.232 5.232l3.536 3.536M9 11l6-6m2 2L9 17H5v-4l10-10z" />
+                                                        </svg>
+                                                        <span class="ml-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">Edit</span>
+                                                    </button>
+                                                    <!-- Delete Button as a direct form submission -->
+                                                    <form action="{{ route('teachers.destroy', $teacher->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this teacher?');" class="inline">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit"  class="group inline-flex items-center text-red-500 hover:text-red-700 text-sm cursor-pointer">
+                                                            <!-- Delete Icon (Trash) -->
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                                                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22" />
                                                             </svg>
-                                                            <!-- Modal Title and Description -->
-                                                            <h2 class="text-xl font-bold py-4 text-gray-200">Are you sure?</h2>
-                                                            <p class="font-bold text-sm text-gray-500 px-2">
-                                                                Do you really want to continue? This process cannot be undone.</p>
-                                                        </div>
-                                                                                                                <!-- Modal Actions -->
-                                                        <div class="p-2 mt-2 text-center flex justify-center items-center space-x-4">
-                                                                    <!-- Cancel Button -->
-                                                                    <button onclick="closeModal()" class="bg-gray-200 hover:bg-transparent px-5 py-2 text-sm shadow-sm hover:shadow-lg font-medium tracking-wider 
-                                                                        border-2 border-gray-900 hover:border-gray-900 text-gray-900 hover:text-gray-100 rounded-xl transition ease-in duration-150">
-                                                                        Cancel
-                                                                    </button>
-
-                                                            <!-- Confirm Delete Button that Submits the Form -->
-                                                            <form id="deleteForm" action="{{ route('teachers.destroy', $teacher->id) }}" method="POST" class="inline">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" class="bg-red-500 hover:bg-transparent px-5 py-2 text-sm shadow-sm hover:shadow-lg font-medium tracking-wider 
-                                                                    border-2 border-red-500 hover:border-red-500 text-white hover:text-red-500 rounded-xl transition ease-in duration-150">
-                                                                    Confirm
-                                                                </button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                            <span class="ml-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">Delete</span>
+                                                        </button>
+                                                    </form>                                                      
                                             </div>
                                         </td>
                                     </tr>
@@ -158,16 +135,23 @@
             </div>
         </div>
     </div>
+@include('partials.teachers.edit-teacher-modal')
 
     <script> 
-        // Open the modal
-        function openModal() {
-            document.getElementById('deleteModal').classList.remove('hidden');
-        }
-    
-        // Close the modal
-        function closeModal() {
-            document.getElementById('deleteModal').classList.add('hidden');
-        }
-        </script>
+       function openEditModal(teacherId, name, nickname) {
+            const modal = document.getElementById('editteacherModal');
+            const form = document.getElementById('editTeacherForm');
+            const input = document.getElementById('modalName');
+            const nicknameInput = document.getElementById('modalNickname');
+
+            form.action = `/teachers/${teacherId}`;
+            input.value = name;
+            nicknameInput.value = nickname;
+
+            modal.classList.remove('hidden');
+       }
+       function closeEditModal() {
+            const modal = document.getElementById('editteacherModal').classList.add('hidden');
+       }
+    </script>
 </x-app-layout>

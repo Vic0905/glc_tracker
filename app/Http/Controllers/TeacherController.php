@@ -24,7 +24,7 @@ class TeacherController extends Controller
         // get the search term from the query string 
         $teacherName = $request->query('teacher_name');
 
-        // Query the subjects table, using the correct column name 'subjectname'
+        // Query the subjects table, using the correct column name 'teachername'
         $teachers = Teacher::query()
             ->when($teacherName, function ($query) use ($teacherName) {
                 $query->where('name', 'like', '%' . $teacherName . '%');
